@@ -29,7 +29,7 @@ Il y a 3 étapes principales dans le processus de modélisation :
 colab:
   base_uri: https://localhost:8080/
 id: no56sbhDQlzP
-outputId: 43dba695-a001-4d12-c4ab-9be54923cdc6
+outputId: e0ac9d51-f8de-4bea-9d93-27c6b610b204
 ---
 !curl -sSL -q -o - "https://cloud.minesparis.psl.eu/index.php/s/MGp21fRa8LEzO3f/download?path=%2F&files=mig25_data.tgz" | tar -xzv
 ```
@@ -86,18 +86,42 @@ class HydroDataset(Dataset):
 ```
 
 ```{code-cell} ipython3
-:id: 90QhdJvXOkY0
-
-from torch.utils.data import Subset
-
+---
+id: 90QhdJvXOkY0
+colab:
+  base_uri: https://localhost:8080/
+outputId: 5e6b3ae9-e944-4c21-bf6e-79cff67be717
+---
 ds = HydroDataset()
+
+X, y, ts = ds[330]  # la 330ème observation
+
+print("Date :")
+print(pd.to_datetime(ts, unit="s").date(), end="\n\n")
+
+print("Les températures :")
+print(X[:21], end="\n\n")
+
+# Les précipitations
+print("Les précipitations :")
+print(X[21:], end="\n\n")
+```
+
+```{code-cell} ipython3
+---
+colab:
+  base_uri: https://localhost:8080/
+id: Wjl0uqSedDLR
+outputId: c94cd60f-809c-48c2-8bb5-e84a6881d22a
+---
+from torch.utils.data import Subset
 
 train_ds = Subset(ds, np.flatnonzero(ds.df.index.year < 2022))
 valid_ds = Subset(ds, np.flatnonzero(ds.df.index.year == 2022))
 test_ds = Subset(ds, np.flatnonzero(ds.df.index.year == 2023))
 
 # pour accéder aux données du sous-ensemble :
-# train_ds.dataset[train_ds.indices]
+train_ds.dataset[train_ds.indices]
 ```
 
 +++ {"id": "xPVr8ApXT4vv"}
@@ -134,7 +158,7 @@ class HydroModel(nn.Module):
 colab:
   base_uri: https://localhost:8080/
 id: DhRad-vRpmQd
-outputId: 409e0583-63b9-4139-e5bd-a75139fcfd38
+outputId: 522434e0-9112-4b10-9e70-e9dcc5fdf57f
 ---
 from torch.nn import MSELoss
 from torch.optim import Adam
@@ -282,7 +306,7 @@ colab:
   base_uri: https://localhost:8080/
   height: 296
 id: TM8gPNZEL0hx
-outputId: 4b21fa68-75ae-4139-86cb-5eb438b8008a
+outputId: b4a54a26-2088-4b8f-822d-437aab0ca141
 ---
 df = pd.DataFrame(np.concatenate(out), columns=["Predicted", "Actual", "DateTime"])
 df["DateTime"] = pd.to_datetime(df["DateTime"], unit="s")
@@ -296,7 +320,7 @@ colab:
   base_uri: https://localhost:8080/
   height: 564
 id: nvbhIKP07AWg
-outputId: 9cbd5a26-0229-4772-fe38-dc2447682ed8
+outputId: b22bdef5-730f-4a2b-9a01-adeba966e255
 ---
 hist = pd.DataFrame(train_history, columns=["Epoch", "Train", "Valid"]).set_index("Epoch")
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -310,6 +334,58 @@ plt.legend()
 plt.show()
 ```
 
-```{code-cell} ipython3
++++ {"id": "OJQ359saKyDj"}
 
+## 5. Réseaux LSTM
+
+Avec tous les modèles que nous avons vus précédemment, nous n'avons jamais utilisé une séquence temporelle en entrée mais seulement un point dans le temps.
+
+Imaginons maintenant qu'au lieu de passer un unique point dans le temps, nous passions, par exemple à notre MLP, un historique de données. Une couche d'entrée à 10 neurones avec 5 neurones pour la température moyenne de J-5 à J-1 et 5 neurones pour le cumul moyen des précipitations de J-5 à J-1.
+
+Probablement que cela améliorerait probablement (un peu) les choses mais le grand défaut de cette approche vient du fait que chaque neurone est indépendant des autres donc les paramètres (poids) sont optimisés séparemment. C'est pour cette raison que les réseaux récurrents sont plus adaptés pour le traitement de séquences (temporelles ou non).
+
+Si nous reprenons notre exemple de modélisation précédent, l'effort n'est pas très important pour transformer notre MLP en LSTM. Outre l'architecture de notre modèle à modifier, la principale modification intervient dans le gestionnaire de données.
+
+En effet, là où il était facile de passer d'un DataFrame à un tableau 2D Numpy ou Pytorch (samples, features), cela devient un peu plus compliqué car il faut désormais transformer nos données en tableau 3D (samples, sequence, features). Or, Pandas ne gère pas cette dimension nativement. L'idée devient donc la suivante :
+
+1.  Nous créons toutes les variables nécessaires avec Pandas,
+2.  Nous passons à Numpy pour créer les séquences temporelles,
+3.  Nous convertissons les séquences en tenseurs avec Pytorch.
+
+```{code-cell} ipython3
+---
+colab:
+  base_uri: https://localhost:8080/
+id: bKR2ON24Vl63
+outputId: 4cace3d1-212b-4fcd-d8cd-bc64b4add8bf
+---
+import numpy as np
+
+def create_sequences(X, seq_len):
+    """Création des séquences temporelles"""
+    Xt = np.zeros((X.shape[0], seq_len, X.shape[1]), dtype=X.dtype)
+    return Xt
+
+X = np.arange(40).reshape(10, 4)
+Xt = create_sequences(X, seq_len=3)
+X.shape, Xt.shape
+```
+
+```{code-cell} ipython3
+class HydroLSTM(nn.Module):
+
+    def __init__(self, input_size, hidden_size=5, num_layers=1):
+        super().__init__()
+        self.lstm = nn.LSTM(input_size=input_size,
+                            hidden_size=hidden_size,
+                            num_layers=num_layers,
+                            batch_first=True,
+                            dropout=0.2 if num_layers > 1 else 0.)
+
+        self.head = nn.Linear(in_features=hidden_size, out_features=1)
+
+    def forward(self, x):
+        _, (hn, cn) = self.lstm(x)
+        y = self.head(hn[-1, :, :])
+        return y, hn, _
 ```
