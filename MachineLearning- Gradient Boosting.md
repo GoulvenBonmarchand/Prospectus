@@ -40,7 +40,7 @@ print(f"R2: {r2:.06f}")
 print(f"MSE: {mse:.06f}")
 print()
 
-display_prediction(y_test, y_pred)
+display_prediction_season(y_test, y_pred)
 ```
 
 ```python

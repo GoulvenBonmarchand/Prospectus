@@ -27,7 +27,8 @@ cf_fr = cf.FR
 tp_fr = tp[tp.columns[tp.columns.str.startswith("FR")]]
 ta_fr = ta[ta.columns[ta.columns.str.startswith("FR")]]
 
-
+cf_fr = cf_fr.loc[cf_fr.index < "2023"]
+tp_fr = tp_fr.loc[tp_fr.index < "2023"]
 cf_mean = cf_fr.rename("CF")
 
 #normalisation
@@ -121,14 +122,14 @@ def window_optimization_heatmap(min_window=1, max_window=180, step=2, search_lag
         "Max Correlation": best_values
     }).sort_values(by="Max Correlation", ascending=False)
     
-    # Affichage textuel pour le contrôle visuel
+    
     print("\n--- Top Fenêtres Optimales ---")
-    print(optimal_df[optimal_df["Max Correlation"] > threshold].head())
+    print(optimal_df[optimal_df["Max Correlation"] > threshold])
 
-    # IMPORTANT : Le return qui permet de sortir la donnée
+   
     return optimal_df
 
-# 2. Création de l'interface interactive stockée dans 'w'
+
 w = interactive(
     window_optimization_heatmap,
     min_window=IntSlider(value=1, min=1, max=30, step=1, description="Min Wind"),
@@ -138,29 +139,28 @@ w = interactive(
     threshold=(0.0, 1.0, 0.05)
 )
 
-# 3. Affichage explicite des sliders
+
 display.display(w)
 ```
 
 
 ```python
-from ipywidgets import interactive, IntSlider
-import IPython.display as display
+max_window = 180
 
+tp_norm = tp_norm.iloc[max_window:,:]
+cf = cf_mean.iloc[max_window:]
 
-def window_optimization(min_window=1, max_window=180, step=2, search_lag_max=10, threshold=0.15):
+def window_optimization_res(max_window):
     
-    windows = range(min_window, max_window + 1, step)
+    windows = range(1, max_window + 1)
     results_matrix = pd.DataFrame(index=tp_norm.columns, columns=windows)
-    
+
     for w in windows:
-        tp_rolled = tp_norm.rolling(window=w).sum()
+        tp_rolled = tp_fr.shift(1).rolling(window=w).sum()
         max_corrs_for_window = pd.Series([-1.0]*len(tp_norm.columns), index=tp_norm.columns)
         
-        for lag in range(search_lag_max + 1):
-            tp_shifted = tp_rolled.shift(lag)
-            current_corrs = tp_shifted.corrwith(cf_mean)
-            max_corrs_for_window = np.maximum(max_corrs_for_window, current_corrs)
+        current_corrs = tp_rolled.corrwith(cf)
+        max_corrs_for_window = np.maximum(max_corrs_for_window, current_corrs)
         
         results_matrix[w] = max_corrs_for_window
 
@@ -170,95 +170,163 @@ def window_optimization(min_window=1, max_window=180, step=2, search_lag_max=10,
     best_values = results_matrix.max(axis=1)
     
     optimal_df = pd.DataFrame({
-        "Optimal Window": best_windows,
-        "Max Correlation": best_values
-    }).sort_values(by="Max Correlation", ascending=False)
+        "Optimal_Window": best_windows,
+        "Max_Correlation": best_values
+    })
     
     return optimal_df
-res_tp = window_optimization()
+res_tp = window_optimization_res(max_window)
 ```
 
 ```python
 res_tp
 ```
 
+```python
+
+nom_fichier = "Resultats_Optimisation_Pluie.csv"
+res_tp.query("Max_Correlation > 0.5").to_csv(nom_fichier)
+```
+
 ## Correlation des températures par régions
 
 ```python
-def window_optimization_heatmap(min_window=1, max_window=180, step=1, search_lag_max=10, threshold=0.25):
+def window_and_lag_optimization(min_window=1, max_window=30, step=1, search_lag_max=180, threshold=0.25):
 
     windows = range(min_window, max_window + 1, step)
 
-    results_matrix = pd.DataFrame(index=ta_norm.columns, columns=windows)
+    results_matrix = pd.DataFrame(index=ta_norm.columns, columns=windows, dtype=float)
+    lags_matrix = pd.DataFrame(index=ta_norm.columns, columns=windows, dtype=float)
     
 
     for w in windows:
-       
+        
         ta_rolled = ta_norm.rolling(window=w).mean()
-        
-        
-        max_corrs_for_window = pd.Series([-1.0]*len(ta_norm.columns), index=ta_norm.columns)
+  
+        best_corr_w = pd.Series([0.0]*len(ta_norm.columns), index=ta_norm.columns)
+        best_lag_w = pd.Series([0]*len(ta_norm.columns), index=ta_norm.columns)
         
         for lag in range(search_lag_max + 1):
-            # Décalage
             ta_shifted = ta_rolled.shift(lag)
-            
-            
             current_corrs = ta_shifted.corrwith(cf_mean)
-            
-            
-            max_corrs_for_window = np.maximum(max_corrs_for_window, current_corrs)
-        
-        
-        results_matrix[w] = max_corrs_for_window
-
  
-    results_matrix = results_matrix.astype(float)
+            is_stronger = current_corrs.abs() > best_corr_w.abs()
+            
+        
+            best_corr_w[is_stronger] = current_corrs[is_stronger]
+            best_lag_w[is_stronger] = lag
+     
+        results_matrix[w] = best_corr_w
+        lags_matrix[w] = best_lag_w
 
-    # --- Affichage Heatmap ---
-    cmap = "coolwarm"
     plt.figure(figsize=(16, 10))
     sns.heatmap(
         results_matrix,
         cmap=cmap,
         vmin=-1, vmax=1,
-        center=threshold,
+        center=0,
         linewidths=.0,
-        cbar_kws={'label': 'Max Correlation (optimized over lags)'}
+        cbar_kws={'label': 'Corrélation Max (Optimisée sur Lag)'}
     )
 
     plt.title(
-        f"Sensibilité de la Corrélation à la taille du Cumul (Rolling Window)\n"
-        f"Lag optimisé entre 0 et {search_lag_max} jours | Threshold={threshold}"
+        f"Optimisation Température : Window vs Région\n"
+        f"Lag optimisé ({0}-{search_lag_max}j) | Threshold={threshold}"
     )
     plt.xlabel("Taille de la fenêtre (Jours)")
     plt.ylabel("Régions")
     plt.show()
 
-    # --- Identification des Optimas ---
-    # On cherche la colonne (fenêtre) qui donne la valeur max pour chaque ligne (région)
-    best_windows = results_matrix.idxmax(axis=1)
-    best_values = results_matrix.max(axis=1)
+    best_windows = results_matrix.abs().idxmax(axis=1)
+
+    best_corrs = []
+    best_lags = []
     
-    # Création d'un tableau récapitulatif
+    for region, window in best_windows.items():
+
+        corr_val = results_matrix.loc[region, window]
+        best_corrs.append(corr_val)
+        lag_val = lags_matrix.loc[region, window]
+        best_lags.append(int(lag_val))
+
+
     optimal_df = pd.DataFrame({
         "Optimal Window": best_windows,
-        "Max Correlation": best_values
-    }).sort_values(by="Max Correlation", ascending=False)
+        "Optimal Lag": best_lags,  
+        "Max Correlation": best_corrs,
+        "Magnitude": [abs(c) for c in best_corrs] # Aide pour le tri
+    }, index=best_windows.index)
 
-    print("\n--- Fenêtres Optimales par Région ---")
-    # On n'affiche que celles qui ont une corrélation décente (> threshold)
-    print(optimal_df)
+    return optimal_df
 
 # Interface interactive
+
 interact(
-    window_optimization_heatmap,
+    window_and_lag_optimization,
     min_window=IntSlider(value=1, min=1, max=30, step=1, description="Min Wind"),
-    max_window=IntSlider(value=180, min=30, max=180, step=5, description="Max Wind"),
+    max_window=IntSlider(value=60, min=30, max=180, step=5, description="Max Wind"),
     step=IntSlider(value=2, min=1, max=10, step=1, description="Step"),
-    search_lag_max=IntSlider(value=0, min=0, max=30, description="Lag Search"),
-    threshold=(0.0, 1.0, 0.05)
+    search_lag_max=IntSlider(value=5, min=0, max=180, description="Lag Search"),
+    threshold=(0.0, 0.8, 0.05)
 )
+```
+
+```python
+def window_and_lag_optimization_res(min_window=1, max_window=180, step=1, search_lag_max=180, threshold=0.25):
+
+    windows = range(min_window, max_window + 1, step)
+
+    results_matrix = pd.DataFrame(index=ta_norm.columns, columns=windows, dtype=float)
+    lags_matrix = pd.DataFrame(index=.columns, columns=windows, dtype=float)
+    for lag in range(search_lag_max +1):
+        lags_matrix
+
+    for w in windows:
+        
+        ta_rolled = ta_norm.rolling(window=w).mean()
+  
+        best_corr_w = pd.Series([0.0]*len(ta_norm.columns), index=ta_norm.columns)
+        best_lag_w = pd.Series([0]*len(ta_norm.columns), index=ta_norm.columns)
+        
+        for lag in range(search_lag_max + 1):
+            ta_shifted = ta_rolled.shift(lag)
+            current_corrs = ta_shifted.corrwith(cf_mean)
+ 
+            is_stronger = current_corrs.abs() > best_corr_w.abs()
+            
+        
+            best_corr_w[is_stronger] = current_corrs[is_stronger]
+            best_lag_w[is_stronger] = lag
+     
+        results_matrix[w] = best_corr_w
+        lags_matrix[w] = best_lag_w
+
+    best_windows = results_matrix.abs().idxmax(axis=1)
+
+    best_corrs = []
+    best_lags = []
+    
+    for region, window in best_windows.items():
+
+        corr_val = results_matrix.loc[region, window]
+        best_corrs.append(corr_val)
+        lag_val = lags_matrix.loc[region, window]
+        best_lags.append(int(lag_val))
+
+
+    optimal_df = pd.DataFrame({
+        "Optimal Window": best_windows,
+        "Optimal Lag": best_lags,  
+        "Max Correlation":[abs(c) for c in best_corrs]
+    }, index=best_windows.index)
+
+    return optimal_df
+
+res = window_and_lag_optimization_res()
+```
+
+```python
+res_ta = res
 ```
 
 ## Implémentation des nouvelles donnnées
@@ -343,8 +411,12 @@ for name, column in tp_FR.items():
     else :
         tp_FR[name] = tp_FR[name].rolling(window = res_tp.loc[name, "Optimal Window"], min_periods = 1).sum()
 
+for name, colums in ta_FR.items():
+    ta_FR[name] = ta_FR[name].rolling(window = res_ta.loc[name, "Optimal Window"], min_periods = 1).mean().shift(res_ta.loc[name, "Optimal Lag"]).fillna(0)
+
+
 # Features & Target
-X = pd.merge(ta_FR.rolling(window =14, min_periods = 1).mean(), tp_FR, left_index = True, right_index = True, suffixes = ("_TA", "_TP"))
+X = pd.merge(ta_FR, tp_FR, left_index = True, right_index = True, suffixes = ("_TA", "_TP"))
 y = cf_FR
 
 
@@ -368,7 +440,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 
 # Modèle Gradient Boosting
 gbr = GradientBoostingRegressor(
-    n_estimators=10000,   # nombre d’étapes de boosting
+    n_estimators=1000,   # nombre d’étapes de boosting
     learning_rate=0.1, # vitesse d'apprentissage
     max_depth=3,        # profondeur des arbres faibles
     random_state=75
@@ -413,7 +485,6 @@ tp = pd.read_csv("data/TP_1d.csv", index_col="Date", parse_dates=True)
 cf_FR = cf[["FR"]]
 ta_FR = ta[ta.columns[ta.columns.str.startswith("FR")]]
 tp_FR = tp[tp.columns[tp.columns.str.startswith("FR")]]
-
 
 
 for name, column in tp_FR.items():
