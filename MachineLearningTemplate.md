@@ -7,6 +7,10 @@ import pandas as pd
 
 ```python
 dataset = MLHydroDataset(data_directory="data", correlation_file="correlation_features_hyperparameters.csv")
+dataset.X
+```
+
+```python
 dataset.prepare_features()
 X = dataset.X
 y = dataset.y

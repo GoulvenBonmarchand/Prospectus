@@ -6,6 +6,7 @@ from numpy import pi
 
 class MLHydroDataset():
     def __init__(self, data_directory="data", correlation_file="correlation_features_hyperparameters.csv"):
+        self.data_directory = data_directory
         cf = pd.read_csv(f"{data_directory}/CF_1d.csv", index_col="Date",
                          parse_dates=["Date"])
         ta = pd.read_csv(f"{data_directory}/TA_1d.csv", index_col="Date",
@@ -17,8 +18,9 @@ class MLHydroDataset():
         ta = ta.loc[:, ta.columns.str.startswith("FR")].add_suffix("_TA")
         tp = tp.loc[:, tp.columns.str.startswith("FR")].add_suffix("_TP")
 
-        ta = ta.mean(axis = 1)
-        X = pd.concat([ta, tp, cf["FR"].rename("CF")], axis=1)
+        ta = ta.mean(axis=1).rename("TA_mean")
+        X = pd.concat([ta, tp,
+                      cf["FR"].rename("CF")], axis=1)
         self.y = X[["CF"]]
         X = X.drop(columns=["CF"])
         X.index = X.index.astype("datetime64[s]")
@@ -45,11 +47,20 @@ class MLHydroDataset():
         self.X['sin'] = np.sin(2 * pi * self.X.index.dayofyear / self.T)
 
         for region in self.regions:
-            if self.correlation_df.at[region, "Max Correlation"] < 0.5 :
-                self.X = self.X.drop(columns = [region])
-            else : 
-                self.X[f"{region}_TP"] = self.X[f'{region}_TP'].rolling(
-                    window=self.correlation_df.at[region, 'Optimal Window']).sum().fillna(0)
+            self.X[f"{region}_TP_acc"] = self.X[f'{region}_TP'].rolling(
+                window=self.correlation_df.at[region, 'Optimal Window']).sum().fillna(0)
+
+    def save_features(self):
+        df_acc_TP_all_regions = self.X[[
+            f"{region}_TP_acc" for region in self.regions]]
+        df_acc_TP_not_all_regions = self.X[[
+            f"{region}_TP_acc" for region in self.regions if self.correlation_df.at[region, "Max Correlation"] >= 0.5]]
+        df_acc_TP_all_regions.to_csv(
+            f'{self.data_directory}/TP_ACC_ALL_W_OPTI.csv')
+        df_acc_TP_not_all_regions.to_csv(
+            f'{self.data_directory}/TP_ACC_NOTALL_W_OPTI.csv')
+        self.X[["TA_mean"]].to_csv(f'{self.data_directory}/TA_MEAN.csv')
+        self.X[["cos", "sin"]].to_csv(f'{self.data_directory}/COS_SIN.csv')
 
     def get_columns_to_normalize(self):
         all_columns = self.X.columns.tolist()
@@ -73,5 +84,3 @@ class MLHydroDataset():
             X2[columns_to_normalize]
         )
         return X_std
-
-
