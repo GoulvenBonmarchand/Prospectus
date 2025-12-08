@@ -128,18 +128,18 @@ A l’heure où la question du climat et de l’énergie s'impose à nous, le li
 
 Au cours de ces trois semaines de MIG, nous avons ainsi étudié \textbf{comment intégrer la variabilité climatique dans les barrages hydrauliques au fil de l'eau ?} \\
 
-En effet, il existe deux principaux types de centrales hydrauliques: les centrales à barrages (hydroelectric dam) de moyenne ou haute chute, caractérisés par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute (de 30m à >300m), et les centrales hydraulique au fil de l'eau (Run of River - RoR), caractérisés par une implantation le long de grands fleuves ou grandes rivières, avec un débit très fort et une faible hauteur de chute (moins de 30m). Localisés au sein de la région PACA, nous nous sommes concentrés sur les barrages au fil de l'eau, prépondérants dans la région.(\textbf{\textit{rajouter deux trois chiffres dessus}})Étant placés directement le long des fleuves et rivières, ils dépendent très fortement des conditions climatiques.
+En effet, il existe deux principaux types de centrales hydrauliques: les centrales à barrages (hydroelectric dam) de moyenne ou haute chute, caractérisées par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute (de 30m à >300m), et les centrales hydrauliques au fil de l'eau (Run of River - RoR), caractérisées par une implantation le long de grands fleuves ou grandes rivières, avec un débit très fort et une faible hauteur de chute (moins de 30m). Localisés au sein de la région PACA, nous nous sommes concentrés sur les barrages au fil de l'eau, prépondérants dans la région.(\textbf{\textit{rajouter deux trois chiffres dessus}})Étant placés directement le long des fleuves et rivières, ils dépendent très fortement des conditions climatiques.
 
 
 De manière plus concrète, nous avons donc essayé de modéliser, de différentes manières en étudiant le cycle de l'eau, la puissance électrique que pourront fournir les barrages en France, en connaissant le volume de précipitations ainsi que la température. On réalise ces prédictions via le facteur de capacité (CF), définit ainsi : \\ $$ CF = \frac{P_{produite}}{P_{capacit\acute e \ install\acute ee}}$$
 
-Après s’être entrainé sur des données pour les années 2015 à 2022, puis validé en testant nos modèles sur les données de 2023, nous avons appliqué cela aux années futures, en essayant de modéliser des situations précises à l’horizon 2050. 
+Après s’être entrainé sur des données pour les années 2015 à 2022, puis avoir validé en testant nos modèles sur les données de 2023, nous avons appliqué cela aux années futures, en essayant de modéliser des situations précises à l’horizon 2050. 
 
 
 \section{Méthodologie }
 
 Afin de faire ces diverses prévisions, nous avons choisi de faire usage de l'apprentissage automatique, également connu sous le nom de Machine Learning, ainsi que du Deep Learning. \\
-Les données dont nous disposons correspondent aux valeurs de températures et de précipitations au niveau régional, ainsi que les CF au niveau national, pour des données journalières allant du premier janvier 2015 au 31 décembre 2023. On cherche donc à prédire le facteur de capacité national à partir des données météorologiques.\\
+Les données dont nous disposons correspondent aux valeurs de températures et de précipitations au niveau régional, ainsi que les CF au niveau national, pour des données journalières allant du premier janvier 2015 au 31 décembre 2023. On cherche donc à prédire le facteur de capacité national à partir des données météorologiques locales.\\
 
 \subsection{Préparation et exploration des données}
 Avant toute modélisation, pour réaliser un modèle de machine learning il est nécessaire de manipuler un set de données et de les trouver. Les données journalières de précipitations et de température sont extraites du projet CLIM2POWER (NUTS-2). Pour la réalisation de notre projet, les données étaient déjà pré-nettoyées. Les données sont explorées et analysées pour trouver de nouvelles \textit{features} qui permettront d'améliorer le modèle. \\
@@ -213,7 +213,7 @@ Random Forest est une technique basée sur les arbres de récursion, qui amélio
 
 
 \subsection{Gradient Boosting}
-Le Gradient Boosting est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au Random Forest qui construit ses arbres en parallèle et de manière indépendante, le Gradient Boosting construit ses arbres de manière séquentielle et additive.Chacunde ces arbres peut être relativement petit et, en général, cela améliorer progressivement la précision du modèle. 
+Le Gradient Boosting est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au Random Forest qui construit ses arbres en parallèle et de manière indépendante, le Gradient Boosting construit ses arbres de manière séquentielle et additive.Chacun de ces arbres peut être relativement petit et, en général, cela améliore progressivement la précision du modèle. 
 
 
 \section{Deep Learning}
@@ -233,18 +233,18 @@ Les résultats obtenus sont les suivants : \\
     \centering
     \begin{tabular}{|c|c|c|c|c|} % Ajout des | pour les lignes verticales
     \hline % Ligne horizontale supérieure
-    \textbf{Modèle} & \textbf{R}^2 & \textbf{MAE} & \textbf{MSE} & \textbf{RMSE} \\
+    \textbf{Modèle} & \textbf{R}^2 & \textbf{nMAE} & \textbf{MSE} & \textbf{nRMSE} \\
     \hline % Ligne horizontale séparant les en-têtes des données
-    Ridge Regression & & & & \\
+    Ridge Regression & 0.5831 & 0.1429 & \textbf{MSE} & 0.1839 \\
     \hline
     Random Forest & & & & \\
     \hline
-    Gradient Boosting & & & & \\
+    Gradient Boosting &0.6637 &0.1333 & & 0.1652\\
     \hline
-    LSTM & & & & \\
+    LSTM &0.7126 &0.1172 & &0.1527 \\
     \hline % Ligne horizontale inférieure
     \end{tabular}
-    \caption{Tableau récapitulatif des meilleurs résultats par modèle} % Caption plus claire
+    \caption{Tableau récapitulatif des meilleurs résultats par modèle en 2023} % Caption plus claire
     \label{tab:tableau_recapitulatif_resultats} % Label standardisé
 \end{table}
 
