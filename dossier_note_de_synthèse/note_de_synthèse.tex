@@ -135,7 +135,7 @@ Dans ce projet, nous nous sommes concentrés sur deux axes principaux :
 \end{itemize}
 \\
 
-Par ailleurs, on peut noter qu'il existe deux principaux types de centrales hydrauliques: les centrales à barrages (hydroelectric dam) de moyenne ou haute chute, caractérisés par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute (de 30m à >300m), et les centrales hydraulique au fil de l'eau (Run of River - RoR), caractérisés par une implantation le long de grands fleuves ou grandes rivières, avec un débit très fort et une faible hauteur de chute (moins de 30m). Nous nous sommes concentrés sur les centrales au fil de l'eau. Étant placés directement le long des fleuves et rivières, ils dépendent très fortement des conditions climatiques.
+Par ailleurs, on peut noter qu'il existe deux principaux types de centrales hydrauliques: les centrales à barrages (hydroelectric dam) de moyenne ou haute chute, caractérisées par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute (de 30m à >300m), et les centrales hydraulique au fil de l'eau (Run of River - RoR), caractérisées par une implantation le long de grands fleuves ou grandes rivières, avec un débit très fort et une faible hauteur de chute (moins de 30m). Nous nous sommes concentrés sur les centrales au fil de l'eau. Étant placés directement le long des fleuves et rivières, ils dépendent très fortement des conditions climatiques.
 
 
 De manière plus concrète, nous avons donc modélisé, de différentes manières en étudiant le cycle de l'eau, la puissance électrique que pourront fournir les barrages en France, en connaissant le volume de précipitations ainsi que la température. On réalise ces prédictions via le facteur de capacité (CF), défini ainsi : \\ $$ CF = \frac{P_{produite}}{P_{capacit\acute e \ install\acute ee}}$$
@@ -293,7 +293,7 @@ Ces résultats sont bien meilleurs que les précédents.
 
 
 \section{Conclusion}
-
+Dans le cadre de ce projet, nous avons ainsi pu à partir des données de températures et de precipitations en France entre 2015 et 2023, créer différents modèles d'apprentissage automatique afin de prédire les facteurs de capacités des centrales hydrauliques au fil de l'eau. Afin d'améliorer la précision de nos modèles, un premier travail de préparation des données a ainsi été effectué pour représenter les dépendances d'une centrale hydraulique aux grandeurs climatiques. Nous avons alors pu entraîner nos différents modèles de machine learning et de deep learning sur ces données. Après comparaison de ces modèles à partir de différentes erreurs et des courbes confrontant les facteurs de capacité réels et prédits, le modèle LSTM a été déterminé comme étant le plus efficace. Ce modèle a donc été choisi pour réaliser une étude prospective à horizon 2050.
 
 
 \end{document}
