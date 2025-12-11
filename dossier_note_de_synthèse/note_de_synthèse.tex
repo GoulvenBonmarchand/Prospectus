@@ -309,25 +309,6 @@ En particulier, le CMA s'est concentré sur le développement d'un modèle pour 
 Pour notre part, nous sommes partis des CF prévus par notre modèle LSTM pour 2050. Nous les avons utilisés pour prévoir des mix énergétiques possibles pour la France en 2050 à l'aide du modèle TIMES-France. Nous avons décidé de mettre en place deux scénarios qui fonctionnent comme un encadrement du scénario tendanciel pour la France : un scénario très optimiste, et un scénario très pessimiste.  
 
 
-\begin{center}
-\begin{tabular}{|m{4cm}|m{4cm}|m{4cm}|}
-   \hline
-   Évolution des paramètres & Scénario optimiste & Scénario pessimiste \\
-   \hline
-   Population & 70 millions & 70 millions \\
-   \hline
-   Demande en électricité & Stagnation par rapport à 2023 &  +1\% par an \\
-   \hline
-   Taxe carbone & Laissée au standard actuel & Supprimée \\
-   \hline
-   Capacity credit & PV : 5\% ; Wind onshore : 15\%  ; Wind offshore : 40\% & PV : 0 ; Wind onshore : 5\% ; Wind offshore : 15\% \\
-   \hline
-   Biogaz & 50 TWh de capacité installée & 16 TWh de capacité installée\\
-   \hline
-\end{tabular}
-\end{center}
-Le capacity credit permet de mesurer la fiabilité d'une centrale électrique. Il correspond à la fraction de la capcité installée d'une centrale électrique sur on peut compter avec certitude à un instant donné (typiquement lors d'un pic de demande).\\
-
 \section{Conclusion}
 Dans le cadre de ce projet, nous avons ainsi pu à partir des données de températures et de precipitations en France 
 entre 2015 et 2023, créer différents modèles d'apprentissage automatique 
