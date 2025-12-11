@@ -166,8 +166,9 @@ Le scénario RCP4.5 correspond à une trajectoire intermédiaire de stabilisatio
 L'étape de \textbf{feature engineering} est cruciale pour améliorer les modèles. Elle consiste à manipuler les données bruts pour extraire des caractéristiques (features) afin de renforcer l'apprentissage du modèle. Pour notre problème, ces caractéristiques sont : 
 \begin{itemize}
     \item la saisonnalité analysée sur les courbes de température et de facts de charge (CF), qui rend compte de données cycliques 
-    \item la fonte des neiges au printemps,  source d'eau supplémentaire dans le cycle de l'eau 
+    \item la fonte des neiges au printemps,  source d'eau supplémentaire dans le cycle de l'eau, qui se traduit par l'ajout de variables retardées (lag).
     \item l'accumulation des précipitations, en mètres par jour de pluie
+
 \end{itemize} 
 
 
@@ -232,9 +233,8 @@ En particulier, nous avons décidé d'implémenter la méthode Ridge,
 
 \subsection{Random Forest}
 
-Après cette technique assez simple, nous nous sommes penchés sur des techniques plus complexes, basées sur les arbres de décisions. 
-La première, \textit{Random Forest}est une technique basée sur les arbres de récursion, qui améliore les arbres baggués pour construire des arbres décorrélés.
-
+Après cette technique assez simple, nous nous sommes penchés sur des techniques plus complexes, basées sur les arbres de décisions.
+La première, Random Forest, est une méthode d’apprentissage basée sur des arbres de décision. Elle améliore l’approche des arbre de decision classiques en construisant un ensemble d’arbres décorrélés, chacun entraîné sur un échantillon de données et un sous-ensemble aléatoire de variables. Cette technique réduit fortement le risque de surapprentissage et augmente la robustesse du modèle. Elle fournit généralement de bonnes performances même lorsque les relations entre variables sont complexes ou non linéaires.
 
 \subsection{Gradient Boosting}
 Le \textit{Gradient Boosting }est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au \textit{Random Forest} qui construit ses arbres en parallèle et de manière indépendante, le \textit{Gradient Boosting} construit ses arbres de manière séquentielle et additive. Chacun de ces arbres peut être relativement petit et, en général, cela améliorer progressivement la précision du modèle. 
@@ -254,19 +254,19 @@ Les résultats obtenus sont les suivants : \\
     
     % Figure 1 (Dessus)
     \includegraphics[width=0.8\textwidth]{CF_2023.png} 
-    \caption{Capacity Factors 2023}
+    \caption{Facteurs de Charge 2023}
     \label{CF_2023_dessus}
     
     \vspace{0.5cm} % Ajoutez un peu d'espace vertical si nécessaire
     
     % Figure 2 (Dessous)
     \includegraphics[width=0.8\textwidth]{CF_val_2022_WE.png}
-    \caption{Capacity Factors 2022}
+    \caption{Facteurs de Charge 2022}
     \label{Autre_Figure_dessous}
     
 \end{figure}
 
-Ces résultats sont bien meilleurs que les précédents.
+
 
 \section{Comparaison des Résultats}
 
@@ -302,6 +302,10 @@ Pour notre part, nous sommes partis des CF prévus par notre modèle LSTM pour 2
 \section{Conclusion}
 Dans le cadre de ce projet, nous avons ainsi pu à partir des données de températures et de precipitations en France entre 2015 et 2023, créer différents modèles d'apprentissage automatique afin de prédire les facteurs de capacités des centrales hydrauliques au fil de l'eau. Afin d'améliorer la précision de nos modèles, un premier travail de préparation des données a ainsi été effectué pour représenter les dépendances d'une centrale hydraulique aux grandeurs climatiques. Nous avons alors pu entraîner nos différents modèles de machine learning et de deep learning sur ces données. Après comparaison de ces modèles à partir de différentes erreurs et des courbes confrontant les facteurs de capacité réels et prédits, le modèle LSTM a été déterminé comme étant le plus efficace. Ce modèle a donc été choisi pour réaliser une étude prospective à horizon 2050. [Parler de la prospective]. 
 
+\newpage
+
+\nocite{*}
+\printbibliography
 
 \end{document}
 
