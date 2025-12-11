@@ -4,6 +4,8 @@
 \usepackage{float} 
 \usepackage{mathrsfs}
 \usepackage{biblatex}
+\usepackage[backend=biber, style=authoryear]{biblatex} % Exemple de style
+\addbibresource{Bibliographie.bib} % <--- Assurez-vous que ce nom de fichier est correct
 \usepackage{minted}
 \usepackage{xcolor}
 \usepackage{amsmath}
@@ -156,7 +158,7 @@ Les données climatiques utilisées comprennent des séries temporelles de préc
 
 Les données historiques, couvrant la période 2015–2023, sont fournies par le Copernicus Climate Change Service (C3S). Bien que ces données soient disponibles à une résolution temporelle horaire, nous retenons une résolution journalière pour cette étude. Le recours à des facteurs de charge journaliers agrégés est privilégié afin de conserver une plus grande flexibilité pour la gestion et l’optimisation du fonctionnement infra-journalier.\\
 
-En ce qui concerne la résolution spatiale, les données climatiques sont agrégées au niveau NUTS2 (régions statistiques utilisées pour l’application des politiques régionales [Ref]) ou au niveau national.\\
+En ce qui concerne la résolution spatiale, les données climatiques sont agrégées au niveau NUTS2 (régions statistiques utilisées pour l’application des politiques régionales) ou au niveau national.\\
 
 Concernant les projections climatiques, des séries temporelles journalières sont extraites pour chaque variable climatique dans le cadre du projet C2P. Les données comprennent des projections futures selon deux voies de concentration représentatives (RCP 4.5 et RCP 8.5), qui sont des scénarios fournissant des séries temporelles des émissions et des concentrations atmosphériques de l’ensemble des gaz à effet de serre, des aérosols, des gaz chimiquement actifs, ainsi que des changements d’occupation des sols.
 \\
@@ -173,7 +175,7 @@ L'étape de \textbf{feature engineering} est cruciale pour améliorer les modèl
 
 
 \subsection{Production hydro-électrique}
-Les données de production hydroélectrique, agrégées à l’échelle nationale, sont issues de la plateforme de transparence de l’ENTSO-E [Ref], qui collecte de manière systématique des données de demande et de production d’électricité à une résolution horaire depuis le 1er janvier 2015. Afin de garantir la cohérence avec la résolution temporelle des données climatiques, nous calculons des valeurs moyennes journalières.\\
+Les données de production hydroélectrique, agrégées à l’échelle nationale, sont issues de la plateforme de transparence de l’ENTSO-E, qui collecte de manière systématique des données de demande et de production d’électricité à une résolution horaire depuis le 1er janvier 2015. Afin de garantir la cohérence avec la résolution temporelle des données climatiques, nous calculons des valeurs moyennes journalières.\\
 
 À partir de cette même plateforme, nous extrayons également les données relatives à la capacité hydroélectrique installée annuelle. La combinaison de ces deux sources d’information permet de reconstituer des séries temporelles du facteur de charge, défini comme le rapport entre la production réelle d’électricité hydraulique et la capacité installée, exprimé en pourcentage.\\
 
@@ -288,6 +290,14 @@ Les résultats obtenus sont les suivants : \\
     \caption{Tableau récapitulatif des meilleurs résultats par modèle} % Caption plus claire
     \label{tab:tableau_recapitulatif_resultats} % Label standardisé
 \end{table}
+
+\begin{figure}[H]
+    \centering % Centre toutes les figures
+    
+    \includegraphics[width=0.5\textwidth]{bar_plot_erreur.jpeg} 
+    \caption{Comparaison des erreurs pour chaque modèle}
+    \label{bar plot errors}
+\end{figure}
 
 
 
