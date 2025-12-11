@@ -314,8 +314,39 @@ En particulier, le CMA s'est concentré sur le développement d'un modèle pour 
 Pour notre part, nous sommes partis des CF prévus par notre modèle LSTM pour 2050. Nous les avons utilisés pour prévoir des mix énergétiques possibles pour la France en 2050 à l'aide du modèle TIMES-France. Nous avons décidé de mettre en place deux scénarios qui fonctionnent comme un encadrement du scénario tendanciel pour la France : un scénario très optimiste, et un scénario très pessimiste.  
 
 
+\begin{center}
+\begin{tabular}{|m{4cm}|m{4cm}|m{4cm}|}
+   \hline
+   Évolution des paramètres & Scénario optimiste & Scénario pessimiste \\
+   \hline
+   Population & 70 millions & 70 millions \\
+   \hline
+   Demande en électricité & Stagnation par rapport à 2023 &  +1\% par an \\
+   \hline
+   Taxe carbone & Laissée au standard actuel & Supprimée \\
+   \hline
+   Capacity credit & PV : 5\% ; Wind onshore : 15\%  ; Wind offshore : 40\% & PV : 0 ; Wind onshore : 5\% ; Wind offshore : 15\% \\
+   \hline
+   Biogaz & 50 TWh de capacité installée & 16 TWh de capacité installée\\
+   \hline
+\end{tabular}
+\end{center}
+
 \section{Conclusion}
-Dans le cadre de ce projet, nous avons ainsi pu à partir des données de températures et de precipitations en France entre 2015 et 2023, créer différents modèles d'apprentissage automatique afin de prédire les facteurs de capacités des centrales hydrauliques au fil de l'eau. Afin d'améliorer la précision de nos modèles, un premier travail de préparation des données a ainsi été effectué pour représenter les dépendances d'une centrale hydraulique aux grandeurs climatiques. Nous avons alors pu entraîner nos différents modèles de machine learning et de deep learning sur ces données. Après comparaison de ces modèles à partir de différentes erreurs et des courbes confrontant les facteurs de capacité réels et prédits, le modèle LSTM a été déterminé comme étant le plus efficace. Ce modèle a donc été choisi pour réaliser une étude prospective à horizon 2050. [Parler de la prospective]. 
+Dans le cadre de ce projet, nous avons ainsi pu à partir des données de températures et de precipitations en France 
+entre 2015 et 2023, créer différents modèles d'apprentissage automatique 
+afin de prédire les facteurs de capacités des centrales hydrauliques au fil de l'eau. 
+Afin d'améliorer la précision de nos modèles, un premier travail de préparation des données a ainsi été effectué pour 
+représenter les dépendances d'une centrale hydraulique aux grandeurs climatiques. Nous avons alors pu entraîner 
+nos différents modèles de machine learning et de deep learning sur ces données. 
+Après comparaison de ces modèles à partir de différentes erreurs et des courbes confrontant les facteurs de capacité 
+réels et prédits, le modèle LSTM a été déterminé comme étant le plus efficace. 
+Ce modèle a donc été choisi pour réaliser une étude prospective à horizon 2050. 
+Pour celle-ci, les scénarios que nous avons testés correspondent à des cas extrêmes. 
+Les issues proposées n'ont pas pour but de prédire exactement le mix énergétique futur, 
+et ne correspondront donc probablement pas à notre réalité.
+Nénamoins, elles permettent "d'encadrer" ce qui pourrait advenir dans le cadre du scénario tendanciel, et de voir ce à quoi certaines décisions importantes, 
+comme la suppression de la taxe carbone dans le cadre du scénario pessimiste, pourraient nous contraindre à mettre en place.
 
 
 \end{document}
