@@ -124,9 +124,9 @@ TOOFA	Keanu\\[1.5cm]
 \\
 
 
-A l’heure où la question du climat et de l’énergie s'imposent à nous, le lien entre les deux est de plus en plus étudié et exploré. Nous pouvons en effet désormais trouver des modèles énergétiques qui intègrent la variabilité climatique, ce qui n’était pas le cas il y a quelques années. En particulier, la variabilité climatique est particulièrement intéressante pour le domaine de l'hydroélectricité, qui représente près de $14 \%$ de la production française et qui dépend directement des précipitations par exemple. \\
+A l’heure où la question du climat et de l’énergie s'imposent à nous, le lien entre les deux est de plus en plus étudié et exploré. Nous pouvons en effet désormais trouver des modèles énergétiques qui intègrent la variabilité climatique, ce qui n’était pas le cas il y a quelques années. Le mix énergétique français repose principalement sur l'électricité dont le nucléaire, qui représente $70 \%$ de la production électrique, en est le principal contributeur. Par ailleurs, l'énergie renouvelable prend une place de plus en plus prépondérante avec $24 \%$ de la production énergétique primaire nationale. Mais les variables climatiques ont une grande influence sur leur efficacité productive. En particulier, la variabilité climatique est particulièrement intéressante pour le domaine de l'hydroélectricité, qui représente près de $14 \%$ de la production française et qui dépend directement des précipitations par exemple.  \\
 
-C'est notamment le sujet au centre de l'initiative Clim2POwer, un projet Européen d'envergure, qui cherche à évaluer la sensibilité à la variabilité climatique des chemins possibles pour atteindre un système électrique neutre en carbone. A partir de données climatiques, des recherches sont menées pour imaginer quel pourrait être le mix énergétique, d'ici 2030-2050. Au cours de ce MIG, nous aavons travaillé dans le cadre de ce projet, en répondant à la question suivante : \textbf{comment prendre en compte la variabilité climatique dans le système énergétique français} \\
+C'est notamment le sujet au centre de l'initiative Clim2Power, un projet Européen d'envergure, qui cherche à évaluer la sensibilité à la variabilité climatique des chemins possibles pour atteindre un système électrique neutre en carbone. A partir de données climatiques, des recherches sont menées pour imaginer quel pourrait être le mix énergétique, d'ici 2030-2050. Au cours de ce MIG, nous avons travaillé dans le cadre de ce projet, en répondant à la question suivante : \textbf{comment prendre en compte la variabilité climatique dans le système énergétique français} \\
 
 Dans ce projet, nous nous sommes concentrés sur deux axes principaux :
 \begin{itemize}
@@ -135,15 +135,15 @@ Dans ce projet, nous nous sommes concentrés sur deux axes principaux :
 \end{itemize}
 \\
 
-Par ailleurs, on peut noter qu'il existe deux principaux types de centrales hydrauliques: les centrales à barrages (hydroelectric dam) de moyenne ou haute chute, caractérisés par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute (de 30m à >300m), et les centrales hydraulique au fil de l'eau (Run of River - RoR), caractérisés par une implantation le long de grands fleuves ou grandes rivières, avec un débit très fort et une faible hauteur de chute (moins de 30m). Nous nous sommes concentrés sur les centrales au fil de l'eau. Étant placés directement le long des fleuves et rivières, ils dépendent très fortement des conditions climatiques.
+Par ailleurs, on peut noter qu'il existe trois principaux types de centrales hydrauliques: les centrales de lac ou de haute chute et les centrales d'éclusée ou de moyenne chute (hydroelectric dam), caractérisées par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute, et les centrales hydraulique au fil de l'eau (Run of River - RoR), caractérisées par une implantation le long de grands fleuves ou grandes rivières, avec un débit très fort et une faible hauteur de chute (moins de 30m). Nous nous sommes concentrés sur les centrales au fil de l'eau. Certains barrages sont aussi dôtés de la technologie de STEP qui permet de réalimenter le bassin d'eau en hauteur à partir du bassin d'eau en sortie de la centrale par pompage. Cette technologie permet d'entretenir la production énergétique. Les centrales à barrage et par STEP sont des énergies de stock qui sont relativement pilotables et souvent utilisée pour les pics de demande énergétique. L'étude du MIG s'intéresse donc aux centrales au fil de l'eau, dont la production varient instantanément en fonction du débit d'eau turbinable dans les rivières. Elles sont donc les plus sensibles à l'influence des variations climatiques. 
 
 
-De manière plus concrète, nous avons donc modélisé, de différentes manières en étudiant le cycle de l'eau, la puissance électrique que pourront fournir les barrages en France, en connaissant le volume de précipitations ainsi que la température. On réalise ces prédictions via le facteur de capacité (CF), défini ainsi : \\ $$ CF = \frac{P_{produite}}{P_{capacit\acute e \ install\acute ee}}$$
+De manière plus concrète, nous avons donc modélisé,,en étudiant le cycle de l'eau, la puissance électrique que pourront fournir les barrages en France, en connaissant le volume de précipitations ainsi que la température. On réalise ces prédictions via le facteur de capacité (CF), défini ainsi : \\ $$ CF = \frac{P_{produite}}{P_{capacit\acute e \ install\acute ee}}$$
 
 
 \section{Données et méthodologie }
 
-Afin de faire ces diverses prévisions, nous avons choisi de faire usage de l'apprentissage automatique, également connu sous le nom de Machine Learning, ainsi que du Deep Learning. \\
+Afin de faire ces diverses prévisions, nous avons choisi de faire usage de l'apprentissage automatique, également connu sous le nom de Machine Learning, ainsi que du Deep Learning. Ces outils sont particulièrement pertinents lorsqu'un modèle physique est difficile à mettre en oeuvre et lorsque les jeux de données à dispositions ne sont pas massifs. Ces deux conditions sont remplies dans notre MIG : les jeux de données sont réduits et fournis à l'échelle nationale par région ; rendant pertinent l'usage de l'apprentissage automatique.\\
 
 
 \subsection{Données climatiques d'entrées}
@@ -152,23 +152,22 @@ Avant toute modélisation, pour réaliser un modèle de Machine Learning il est 
 
 Les données climatiques utilisées comprennent des séries temporelles de précipitations et de température de l’air à 2 mètres au-dessus de la surface. Elles présentent une résolution spatiale d’environ 0,25° × 0,25°.\\
 
-Les données historiques, couvrant la période 2015–2023, sont fournies par le Copernicus Climate Change Service (C3S) [Ref]. Bien que ces données soient disponibles à une résolution temporelle horaire, nous retenons une résolution journalière pour cette étude. Le recours à des facteurs de charge journaliers agrégés est privilégié afin de conserver une plus grande flexibilité pour la gestion et l’optimisation du fonctionnement infra-journalier.\\
+Les données historiques, couvrant la période 2015–2023, sont fournies par le Copernicus Climate Change Service (C3S). Bien que ces données soient disponibles à une résolution temporelle horaire, nous retenons une résolution journalière pour cette étude. Le recours à des facteurs de charge journaliers agrégés est privilégié afin de conserver une plus grande flexibilité pour la gestion et l’optimisation du fonctionnement infra-journalier.\\
 
 En ce qui concerne la résolution spatiale, les données climatiques sont agrégées au niveau NUTS2 (régions statistiques utilisées pour l’application des politiques régionales [Ref]) ou au niveau national.\\
 
 Concernant les projections climatiques, des séries temporelles journalières sont extraites pour chaque variable climatique dans le cadre du projet C2P. Les données comprennent des projections futures selon deux voies de concentration représentatives (RCP 4.5 et RCP 8.5), qui sont des scénarios fournissant des séries temporelles des émissions et des concentrations atmosphériques de l’ensemble des gaz à effet de serre, des aérosols, des gaz chimiquement actifs, ainsi que des changements d’occupation des sols.
 \\
-Le scénario RCP4.5 correspond à une trajectoire intermédiaire de stabilisation dans laquelle le forçage radiatif se stabilise autour de 4,5 W/m², tandis que, dans le cas du RCP8.5, le forçage radiatif dépasse 8,5 W/m² à l’horizon 2100 et continue d’augmenter par la suite [Ref].
+Le scénario RCP4.5 correspond à une trajectoire intermédiaire de stabilisation dans laquelle le forçage radiatif se stabilise autour de 4,5 W/m², tandis que, dans le cas du RCP8.5, le forçage radiatif dépasse 8,5 W/m² à l’horizon 2100 et continue d’augmenter par la suite.
 \\
 
 L'étape de \textbf{feature engineering} est cruciale pour améliorer les modèles. Elle consiste à manipuler les données bruts pour extraire des caractéristiques (features) afin de renforcer l'apprentissage du modèle. Pour notre problème, ces caractéristiques sont : 
 \begin{itemize}
-    \item la saisonnalité analysée sur les courbes de température et de Capacity Factors (CF),
-    \item la fonte des neiges au printemps,  
-    \item l'accumulation des précipitations. 
+    \item la saisonnalité analysée sur les courbes de température et de Capacity Factors (CF), qui rend compte de données cycliques 
+    \item la fonte des neiges au printemps,  source d'eau supplémentaire dans le cycle de l'eau 
+    \item l'accumulation des précipitations, en mètres par jour de pluie
 \end{itemize} 
 
-[COMPLETER]
 
 \subsection{Production hydro-électrique}
 Les données de production hydroélectrique, agrégées à l’échelle nationale, sont issues de la plateforme de transparence de l’ENTSO-E [Ref], qui collecte de manière systématique des données de demande et de production d’électricité à une résolution horaire depuis le 1er janvier 2015. Afin de garantir la cohérence avec la résolution temporelle des données climatiques, nous calculons des valeurs moyennes journalières.\\
@@ -180,7 +179,7 @@ Les données de production hydroélectrique, agrégées à l’échelle national
 
 Le Machine Learning est une branche de l'Intelligence Artificielle qui permet à un système "d'apprendre", de faire des prédictions et de prendre des décisions, suite à une période d'apprentissage. 
 
-L'objectif principal est que le modèle entraîné puisse fonctionner sur des données nouvelles, inconnues, pour prédire. Ici, l'idée est donc d'entraîner le modèle sur les données des années précédentes, pour essayer de prévoir les facteurs de capacité futurs. \\
+L'objectif principal est que le modèle entraîné puisse fonctionner sur des données nouvelles, inconnues, pour prédire correctement (Robustesse). Ici, l'idée est donc d'entraîner le modèle sur les données des années précédentes, pour essayer de prévoir les facteurs de capacité futurs. \\
 
 
 Pour garantir cette généralisation, on divise l'ensemble total des données en trois parties distinctes et chronologiques.
@@ -261,8 +260,26 @@ En particulier, nous avons utilisé le modèle LSTM (Long Short-Term Memory, soi
 
 Les résultats obtenus sont les suivants : \\
 
-[RESULTATS & GRAHPIQUE FINAL]
-
+\begin{figure}[!htp]
+    % Figure 1 (Gauche)
+    \begin{minipage}{0.48\textwidth} % Prend 48% de la largeur du texte
+        \centering
+        \includegraphics[width=\linewidth]{CF_2023.png} % L'image prend 100% de la minipage
+        \caption{Capacity Factors 2023}
+        \label{CF_2023_gauche}
+    \end{minipage}%
+    \hfill% (Espace horizontal pour séparer les deux minipages)
+    % Figure 2 (Droite)
+    \begin{minipage}{0.48\textwidth} % Prend 48% de la largeur du texte
+        \centering
+        \includegraphics[width=\linewidth]{CF_val_2022_WE.png} % L'image prend 100% de la minipage
+        \caption{Capacity Factors 2022}
+        \label{Autre_Figure}
+    \end{minipage}
+    
+    \caption{Comparaison des Capacity Factors et d'une autre figure.} % Caption générale pour les deux figures
+    \label{Figures_Cote_a_Cote}
+\end{figure}
 
 Ces résultats sont bien meilleurs que les précédents.
 
@@ -298,7 +315,8 @@ Pour notre part, nous sommes partis des CF prévus par notre modèle LSTM pour 2
 
 
 \section{Conclusion}
-
+Dans le cadre de ce projet, nous avons ainsi pu à partir des données de températures et de precipitations en France entre 2015 et 2023, créer différents modèles d'apprentissage automatique afin de prédire les facteurs de capacités des centrales hydrauliques au fil de l'eau. Afin d'améliorer la précision de nos modèles, un premier travail de préparation des données a ainsi été effectué pour représenter les dépendances d'une centrale hydraulique aux grandeurs climatiques. Nous avons alors pu entraîner nos différents modèles de machine learning et de deep learning sur ces données. Après comparaison de ces modèles à partir de différentes erreurs et des courbes confrontant les facteurs de capacité réels et prédits, le modèle LSTM a été déterminé comme étant le plus efficace. Ce modèle a donc été choisi pour réaliser une étude prospective à horizon 2050. [Parler de la prospective]. 
 
 
 \end{document}
+
