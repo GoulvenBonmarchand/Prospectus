@@ -352,38 +352,48 @@ Nous nous inscrivons ici dans une démarche de prospective. Aujourd'hui, elle co
 
 Il est important de souligner que la prospective se différencie de la prévision, malgré de nombreuses ressemblances de prime abord.
 
-De fait, la prévision vise à des échelles de temps relativement courtes -del'ordre de l'année-, et se concentre sur l'élaboration d'un unique scénario : une ligne directrice unique qui serait à suivre.\\
+De fait, la prévision vise à des échelles de temps relativement courtes -de l'ordre de l'année-, et se concentre sur l'élaboration d'un unique scénario : une ligne directrice unique qui serait à suivre.\\
 
 La prospective, quant à elle, vise à des horizons plus lointains (de l'ordre de la dizaine d'année), et s'inscrit dans l'exploration de nombreux scénarios. L'idée est ici de construire non pas un avenir, mais des avenirs, qui laisseraient la possibilité d'opérer à des changements majeurs dans certains secteurs donnés de notre société, selon l'évolution réelle qui se fera de cette dernière. Le but est donc d'explorer un grand nombre de scénarios afin d'avoir envisagé toutes les éventualités, et ainsi de ne pas être pris au dépourvu, lorsqu'il est nécessaire de fixer des directives dans des secteurs donnés (énergétique, économie, etc.).
 
 \subsection{Le Modèle Times-France}
 
-Le modèle Times-France est issu de la famille de modèles  MARKAL/TIMES (MARKet ALlocation/ The Integrated Markal Efom (Energy Flow Optimization Model) System). 
+Le modèle Times-France est issu de la famille de modèles  MARKAL/TIMES (MARKet ALlocation/ The Integrated Markal Efom (Energy Flow Optimization Model) System). Cette famille de modèles est à la base du programme en modélisation prospective du Centre de Mathématiques Appliquées (CMA) des Mines de Paris. \\
+Initialement, ces modèles se concentraient uniquement sur la gestion de l'électricité, mais ils se sont étendu à l'entiéreté du système énergétique. 
+ Ils peuvent se déployer sur différentes échelles : la France, l'Europe, ou le monde. Par la suite, le CMA s'est concentré sur le développement d'un modèle spécifique à la France, qui évolue en permanence depuis 2003 afin de s'adapter le plus possible aux évolutions constantes du système énergétique français. C'est donc un modèle adaptable, qui est développé et amélioré en continu. \\
+ Ces évolutions permanentes se font notamment autour de la modélisation de la biomasse, des secteurs électriques, résidentiels et des transports français. Il est en outre important de prendre en compte les mises à jour des bases de données technologiques, qui influent fortement sur la demande en énergie (par exemple les data centers : forte demande en électricté, apport en eau pour les circuits de refroidissement, etc.). En outre, des approfondissements récents ont été mis en place autour de la représentation de la flexibilité des systèmes qui se basent sur plusieurs sources énergétiques (intermittentes ou non), mais aussi sur l'influence de l'évolution des modes de vie et de consommation des ménages sur la demande en services énergétiques. \\
 
-Le programme de recherche en modélisation prospective du Centre de Mathématiques Appliquées repose sur l’optimisation d’une représentation technico-économique du système énergétique à l’aide du modèle MARKAL-TIMES (MARKet ALlocation/The Integrated Markal Efom System). Ces modèles de planification long terme sont au centre des activités de modélisation de la Chaire.
+ Nous nous sommes basés sur le modèle Times-France, avec l'aide d'Edi ASSOUMOU (CMA MINES ParisTech) pour mettre en place notre démarche de prospective. \\
+ Le modèle Times-France se base sur une représentation technico-économique du système énergétique français, et cherche à optimiser cette représentation en minimisant les coûts d'investissements réalisés dans ce secteur. Cela veut dire que pour un jeu de donnéess d'entrée fixé, le modèle nous donnera en sortie un mix énergétique pour la France à un horizon de temps que nous aurons fixé, qui correspond aux contraintes que nous aurons imposé, tout en minimisant les coûts d'investissements réalisés entre l'année de départ et l'année horizon dans le système énergétique, pour atteindre ce mix énergétique futur. En d'autres termes, nous avons en sortie le mix énergétique le moins cher, au sens propre du terme. \\
+
+ C'est en outre un modèle linéaire. Il prend en entrée un grand nombre de données, parmi lesquelles :
+ \begin{itemize}
+ \item La capacité installée actuelle en France par source d'énergie
+ \item La croissance de la consommation énergétique per capita estimée entre aujourd'hui et l'année horizon
+ \item La population française estimée en 2050
+ \item Le capacity credit attribué à chaque source en énergie : il permet de mesurer la fiabilité d'une centrale électrique. Il correspond à la fraction de la capacité installée d'une centrale électrique sur laquelle on peut compter avec certitude à un instant donné (typiquement lors d'un pic de demande). Il peut donc être fixé à 1 pour le nucléaire ou le thermique à flamme, mais il est bien plus faible pour les énergies renouvelables telles que l'éolien ou le solaire, qui sont intermittentes et dépendent fortement des conditions météorologiques.
+ \item Le nombre de voitures individuelles en France estimés pour l'année horizon
+ \item etc...
+ \end{itemize}
+\\
+
+Il établit ensuite des relations linéaires entre ces différentes données, en essayant de retranscrire au mieux la chaîne de demande énergétique en France. Le logiciel fait de plus apparaître explicitement les différents acteurs qui interviennent sur cette chaîne : import et production d'énergie, acheminement sur le territoire français, consommateurs (particuliers et entreprises...). Anisi, on a un fonctionnement par ramification, avec la possibilité d'intervenir à différents niveaux dans cette chaîne de demande. De plus, on peut aussi influer sur les contraintes législatives ou bien qui relèvent plus de l'opinion publique : on peut fixer la taxe carbone, ou aussi mettre en place la sortie du nucléaire, etc.\\
+
+Il a donc été nécessaire pour nous de réfléchir aux endroits où il est pertinent d'intervenir.
+ \begin{itemize}
+ \item Au niveau des données d'entrée : est-on optimiste vis-à-vis de la confiance que l'on accorde aux énergies renouvelables (intervenir sur les valeurs attribuées aux capacity credits) ? Est-ce que l'on considère que l'on va vers la sobriété (peu de croissance de la demande énergétique per capita) ?
+ \item Au niveau des différents liens : il est possible de couper l'acheminement sur le territoire, l'import ou la production de certaines sources d'énergie. Permet-on l'usage du biogaz ? Et celui du charbon ?
+ \item Au niveau des contraintes législatives : à combien fixe-t-on la taxe carbone ? La sortie du nucléaire est-elle envisageable ?
+ \end{itemize}
+ 
+Certains choix peuvent sembler plus pertinents que d'autres : de fait, aujourd'hui, 65\% de la production électrique française est assurée par le nucléaire. De même, un retour à un usage prépondérant du charbon semble peu probable du fait de l'amenuisement des ressources et de l'objectif français d'atteindre le net 0 en terme d'émissions de GES d'ici à 2050.
 
 
+Néanmoins, il s’agit du but même de la prospective de mettre en place tous ces scénarios, afin d’envisager le plus de futurs possibles, et de ne pas être pris au dépourvu.
 
-Les modèles de planification à long terme issus de la famille des modèles MARKAL/TIMES (MARKet ALlocation/ The Integrated Markal Efom System) sont au centre des activités de modélisation de la Chaire. Cette démarche repose sur l’optimisation d’une représentation technico-économique du système énergétique. Le corpus méthodologique sur lequel elle s’appuie est développé au sein de l’ETSAP (Energy Technology Systems Analysis Program), programme de coopération internationale sous l’égide de l’Agence Internationale de l’Energie, AIE. Les périmètres géographiques de déploiement de cette approche au CMA sont la France, l’Europe et le Monde. Le CMA a particulièrement investi dans le développement du modèle France, unique, pour lequel des développements et améliorations sont permanents depuis 2003.
+\subsection{Les scénarios mis en place}
 
-D’abord focalisé sur la question électrique, le modèle a évolué successivement vers une représentation d’ensemble du système énergétique, puis vers un raffinement de certains sous-secteurs ou modules. Ces évolutions continues concernent notamment la biomasse, le secteur électrique, les secteurs résidentiels et des transports, et la révision des bases de données technologiques. Le modèle TIMES-France permet d’évaluer pour la France les implications de différents scénarios énergétiques : le facteur 4, la valeur du carbone, la sortie du nucléaire notamment.
-
-Dans le cadre de travaux de thèses récents, des approfondissements ont en particulier été menés sur la représentation de la flexibilité dans les systèmes multi-énergies, sur les filières gazières alternatives (power to gaz et biométhane), ainsi que sur l’influence d’une évolution des modes de vie sur le niveau de demande de services énergétiques des ménages.
-Voyons maintenant à quoi correspond concrètement le modèle Times-France, et comment il fonctionne.
-D’abord sur l’origine du modèle Times-France. Le CMA s'est concentré sur le développement d'un modèle de prospective pour la France, qui évolue en continu afin de prendre en compte les derniers changements des secteurs électrique, résidentiel, et des transports français notamment, ainsi que des innovations technologiques qui influent fortement sur la consommation énergétique.
-Il se base sur l'optimisation d'un modèle technico-économique du système énergétique, en cherchant à minimiser les coûts d’investissements réalisés dans le domaine de l’énergétique.
-Pour parler de son fonctionnement, Times est un modèle linéaire qui prend en entrée beaucoup de données (par exemple le nb de voitures individuelles, la capacité installée actuelle par source d’énergie, la croissance de la consommation énergétique per capita, la population estimée en France en 2050, etc…).
-Ensuite il établit des liens linéaires entre ces différentes données, afin de retranscrire au mieux la chaîne de demande énergétique en France.
-	On a ainsi un fonctionnement par ramification.
-Slide 59 :
-Maintenant, on peut donc se demander quelles conséquences on peut prévoir sur les installations électriques françaises à l’horizon 2050. Pour étudier cela, il était nécessaire de réfléchir au préalable à quel « endroit » du secteur énergétique nous allons intervenir via le modèle.
-Par exemple, si l’on se concentre sur la part du biogaz dans le mix énergétique français : est-ce que l’on influe sur la production/les imports (donc à la base), ou bien plus loin dans la ramification sur ceux qui ont la charge de l’acheminer sur le territoire français ?
-	Les deux sont rendus possibles par le modèle, et il faut donc mettre en place cette réflexion.
-En outre, on peut aussi jouer sur les contraintes législatives, et voir les impacts qu’elles ont sur le secteur énergétique. A titre d’illustration, on peut influer sur la taxe carbone et son évolution d’ici à 2050. Ainsi, est-ce qu’on impose que la production d’électricité soit décarbonée d’ici à 2050 (ce qui correspond à la trajectoire choisie par le gouvernement français), ou non ?
-On peut aussi s’intéresser à la sortie du nucléaire : est-elle envisageable à ce jour ? On peut souligner que ceci implique des changements majeurs dans un pays dont environ 65% de la production d’électricité est assurée par le nucléaire actuellement, et dont le but est d’avoir une électricité décarbonée en 2050.
-	Néanmoins, il s’agit du but même de la prospective de mettre en place tous ces scénarios, afin d’envisager le plus de futurs possibles, pour ne pas être pris au dépourvu.
-Le but pour nous a été d’apprendre à manipuler le modèle Times-France. Nous avons ainsi cherché à explorer deux scénarios extrêmes, qu’Oriane va à présent vous présenter.
-
+[EXPLIQUER LES SCENARIOS REALISES, LES CONTRAINTES FIXEES, ETC]
 
 Tableau récapitulatif des paramètres : 
 \begin{center}
@@ -403,7 +413,10 @@ Tableau récapitulatif des paramètres :
    \hline
 \end{tabular}
 \end{center}
-Le capacity credit permet de mesurer la fiabilité d'une centrale électrique. Il correspond à la fraction de la capcité installée d'une centrale électrique sur on peut compter avec certitude à un instant donné (typiquement lors d'un pic de demande).\\
+
+\subsection{Résultats}
+
+[METTRE LES GRAPHIQUES, COMMENTER, JUSTIFIER NOS RESULTATS]
 
 \newpage
 \section{Conclusion}
