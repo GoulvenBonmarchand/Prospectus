@@ -1,1 +1,412 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float} 
+\usepackage{mathrsfs}
+\usepackage{biblatex}
+\usepackage{minted}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\newtheoremstyle{nopointbreak}
+  {\topsep}       % Espace au-dessus
+  {\topsep}       % Espace en-dessous
+  {\itshape}      % Corps du théorème
+  {}              % Indentation
+  {\bfseries}     % Style du titre
+  {}              % PAS de point après le titre
+  {\newline}      % Retour à la ligne après le titre
+  {}              % Personnalisation des en-têtes
+\newtheoremstyle{nobrkbold}
+  {\topsep}       % Espace au-dessus
+  {\topsep}       % Espace en-dessous
+  {}              % Corps normal (pas italique)
+  {}              % Indentation
+  {\bfseries}     % Titre en gras
+  {}              % Pas de point
+  { }             % Espace après le titre (sur la même ligne)
+  {}              % En-tête
+\theoremstyle{nopointbreak}
+\newtheorem{theorem}{Théorème}
+\newtheorem*{theorem*}{Théorème}
+\theoremstyle{nobrkbold}
+\newtheorem*{remark}{Remarque :}
+\usepackage{csquotes}
+\addbibresource{}
+\usepackage[a4paper, left=1.5cm, right=1.5cm, top=2cm, bottom=2cm]{geometry}
+\usepackage[french]{babel}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{comment}
+\usepackage[T1]{fontenc}
+\usepackage[final]{hyperref}
+\hypersetup{
+    colorlinks=true,     
+    linkcolor=blue,        
+    citecolor=black,       
+    filecolor=magenta,    
+    urlcolor=blue    
+}
+\date{Février 2025}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[autolanguage]{numprint} % for the \nombre command
+\usepackage[a4paper, width=170mm,top=25mm,bottom=15mm]{geometry}
 
+
+\usepackage{graphicx}    
+\graphicspath{{figs/}} 
+
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}  
+\usepackage{amsmath}  
+\usepackage{amsfonts}
+\usepackage{amssymb}   
+\usepackage{amsthm}
+\usepackage{thmtools}
+\usepackage{indentfirst} 
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{wrapfig}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{titlesec, color}
+\usepackage{ifthen}
+\usepackage{etoolbox}
+
+
+\begin{document}
+\begin{titlepage}
+    \begin{center}
+     \includegraphics[width=0.6\textwidth]{logo_CMA.jpg}
+    \\[0.1cm]
+
+    \rule{\linewidth}{0.5mm} \\[0.6cm]
+    {\LARGE \bfseries L'IMPACT DE LA VARIABILITÉ CLIMATIQUE \\SUR LE SYSTEME ELECTRIQUE FRANÇAIS\\[0.6cm]}
+    \rule{\linewidth}{0.5mm} \\[1.1cm]
+    \Large MIG PROSPECTUS \\Rapport\\[1cm]
+    
+    \Large AULLEN CHOUBRAC	Yannis,
+ARNAUD	Oriane,
+BALBZIOUI	Ziad,
+BONMARCHAND	Goulven,
+CHRISTMANN	Raphaëlle,
+DAURES--BOUVET	Eliott,
+GIUNTA	Romain,
+HOUMAIRE	Marie,
+LAUVERGNE	Alexis,
+MAZINGUE	Léna,
+MRIMI	Mouad,
+NEVES	Tiago,
+TOOFA	Keanu\\[1.5cm]
+
+    \Large Valentina SESSA, Chargée d'enseignement recherche (CMA)
+
+    \Large Damien CORRAL, Ingénieur de recherche (CMA)
+    
+    \vfill
+    
+    {\large Décembre 2025}
+    
+    \end{center}
+\end{titlepage}
+\onehalfspacing
+\tableofcontents
+\newpage
+
+\pagestyle{plain}
+
+\section{Introduction}
+%\label{chp:intro}Note de synthèse collective (3–5 pages).\begin{itemize} \item  Objectif : exposer clairement la problématique, la démarche, les résultats clés et les perspectives.\item Public : jury interdisciplinaire et partenaires industriels.\item Remise : vendredi 12 décembre 2025.\end{itemize}%
+
+
+\\
+
+(\textbf{\textit{Parler de la visite de la centrale hydraulique en intro !!!}}) \\
+A l’heure où la question du climat et de l’énergie s'impose à nous, le lien entre les deux est de plus en plus étudié et exploré. Nous pouvons en effet désormais trouver des modèles énergétiques qui intègrent la variabilité climatique, ce qui n’était pas le cas il y a quelques années. En particulier, la variabilité climatique est particulièrement intéressante pour le domaine de l'hydroélectricité, qui représente près de $14 \%$ de la production française et qui dépend directement des précipitations par exemple. \\
+
+Au cours de ces trois semaines de MIG, nous avons ainsi étudié \textbf{comment intégrer la variabilité climatique dans les barrages hydrauliques au fil de l'eau ?} \\
+
+En effet, il existe deux principaux types de barrages : les barrages de moyenne ou haute chute, caractérisés par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute (de 30m à >300m), et les barrages au fil de l'eau, caractérisés par une implantation le long de grands fleuves ou grandes rivières, avec un débit très fort et une faible hauteur de chute (moins de 30m). Localisés au sein de la région PACA, nous nous sommes concentrés sur les barrages au fil de l'eau, prépondérants dans la région.(\textbf{\textit{rajouter deux trois chiffres dessus}})Étant placés directement le long des fleuves et rivières, ils dépendent très fortement des conditions climatiques.
+
+
+De manière plus concrète, nous avons donc essayé de modéliser, de différentes manières, la puissance électrique que pourront fournir les barrages en France, en connaissant le volume de précipitations ainsi que la température. On réalise ces prédictions via le facteur de capacité, ou encore facteur de charge (CF, capacity factor), définit ainsi : \\ $$ CF = \frac{P_{produite}}{P_{capacit\acute e \ install\acute ee}}$$
+
+Après s’être entrainé sur des données pour les années 2015 à 2022, puis validé en testant nos modèles sur les données de 2023, nous avons appliqué cela aux années futures, en essayant de modéliser des situations précises à l’horizon 2050. 
+
+\newpage
+
+\section{Méthodologie }
+
+Afin de faire ces diverses prévisions, nous avons choisi de faire usage de l'apprentissage automatique, également connu sous le nom de Machine Learning, ainsi que du Deep Learning. \\
+Les données dont nous disposons correspondent aux valeurs de températures et de précipitations au niveau régional, ainsi que les CF au niveau national, pour des données journalières allant du premier janvier 2015 au 31 décembre 2023. On cherche donc à prédire le facteur de capacité national à partir des données météorologiques.\\
+
+\subsection{Apprentissage Automatique}
+
+Le Machine Learning est une branche de l'Intelligence Artificielle qui permet à un système "d'apprendre", de faire des prédictions et de prendre des décisions, suite à une période d'apprentissage. 
+
+L'objectif principal est qu le modèle entraîné puisse fonctionner sur des données nouvelles, inconnues, pour prédire. Ici, l'idée est donc d'entraîner le modèle sur les données des années précédentes, pour essayer de prévoir les facteurs de capacité futurs. \\
+
+
+Pour garantir cette généralisation, on divise l'ensemble total des données en trois parties distinctes et chronologiques.
+\begin{itemize}
+    \item \textbf{Training Set} : c'est le plus grand ensemble de données (souvent 60\% à 80\% du total), utilisé pour ajuster les paramètres (les poids) du modèle.
+    \item \textbf{Validation Set} : il est utilisé pour optimiser les hyperparamètres du modèle et permet de trouver la configuration qui donne la meilleure performance avant de voir les données de test.
+    \item \textbf{Test Set} : c'est le plus petit ensemble. Il est utilisé une seule fois, à la toute fin du processus, pour obtenir une estimation non biaisée de la performance du modèle sur des données complètement nouvelles.
+\end{itemize}
+Dans notre projet, le \textit{training set} et le \textit{validation set }correspondent aux données de 2015 à 2022, et le \textit{test set} correspond aux données de 2023.
+
+
+\subsection{Erreurs}
+Afin d'optimiser nos modèles, nous essayons de minimiser plusieurs types d'erreurs. On note $y$ le résultat réel, $\hat{y}$ le résultat prédit, et $\bar{y}$ la moyenne des $y_i$.
+
+\begin{itemize}
+
+    \item MAE : MSE : moyenne de l’erreur absolue, qui mesures la moyenne des résidus dans le data set  $$\text{MAE} = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|$$
+    
+    \item MSE : Moyenne de l’erreur au carré, qui mesure la variance des résultats $$ \text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+
+    \item RMSE : écart-type, RMSE$= \sqrt{MSE}$
+
+    \item $R^2$ : mesure la proportion de la variance de la variable dépendante (la cible, ici le facteur de capacité CF) qui est expliquée par les variables indépendantes (nos features, TA et TP) dans le modèle de régression.
+$$R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2}$$
+
+\end{itemize}
+
+
+\subsection{Minimisation, Optimisation et traitement des données}
+A la vue de ces différentes erreurs, nous avons mis en place plusieurs stratégies pour réduire les erreurs. \\
+
+
+Sur le traitement des prévision météorologiques, nous avons effectué des moyennes glissantes sur 10 ans, séparé et codé différents scénarios, et supprimé de la modélisation les régions avec une trop faible corrélation entre les données météorologiques et les CF. \\
+
+
+[COMPLETER avec explications sur le traitement des données fait par Tiago et Oriane]
+
+Pour le traitement des données utilisées lors de l'entraînement et du test de nos modèles (les données de 2015 à 2023), de nos modèles, nous avons procédé à la normalisation des données, au moyennage des températures, au cumul des précipitations, et de même que pour les prévisions, nous avons retiré les régions ayant une trop faible corrélation entre les données météorologique et les CF. Nous avons également mis en place des fonctions rendant compte d'une forme de périodicité dans les données, liée à la saisonnalité (ici les fonctions cosinus et sinus), ainsi que l'introduction d'un lag entre les données météorologiques et les CF. \\
+
+
+Voyons plus en détail les différents traitements réalisés. Ils sont absolument essentiels, car au-delà du fait de considérer des données qui ont un impact réel sur le facteur de capacité, les traiter au préalable permet d'augmenter significativement les performances des modèles, comme nous le verrons par la suite. \\
+
+Nous avons donc mis en place différents traitements :
+\begin{itemize}
+    \item{Normalisation des données} : les données de températures que nous avons utilisé sont en Kelvin, tandis que celles de pluviométrie sont en mètre. Les premières sont donc de l'ordre de $10^2$ K et les secondes de l'ordre de $10^{-3}$ à $10^{-2}$ m. Ceci pose problème car lors des calculs réalisés à l'entraînement de notre modèle, qui vont donc construire ce même modèle, les données de température vont prendre le pas sur celles de pluviométrie, ce qui impacte fortement l'erreur que l'on aura lors de nos prévisions futures. En normalisant, ceci nous permet de rééquilibrer l'importance des différentes données prises en compte lors de la construction de notre modèle de prédiction, et donc de mettre en place un modèle plus fiable. \\
+    \item{Suppression des régions ayant une faible corrélation entre les données météorologiques et le facteur de charge national} :
+    
+    \item{Moyennage des températures} :
+    
+    \item{Lag}: il a pour but de traduire le fait que les données climatiques n'ont pas nécessairement un impact immédiat sur le facteur de capacité Par exemple, des précipitations mettent un certain temps à influer sur le débit d'un fleuve, car non localisée en une seul point. De même, il existe un certain délai entre des températures suffisamment élevée pour entraîner une fonte des neige significative, qui va par la suite résulter en une augmentation des débits fluviaux. Nous avons introduits des lags allant de 1 à 15 jours pour les données de températures. \\
+
+
+    
+    \item{Implémentation des saisons} : après quelques tests, nous nous sommes rendus compte que les valeurs du CF restaient très proches de la moyennes et ne rendaient pas compte des fortes variations qu'il peut exister. Aussi, pour une meilleure prise en compte de la saisonnalité, périodique, nous avons multiplié les colonnes par des cosinus et des sinus 
+    
+    \item{Calcul du biais} :
+\end{itemize}
+
+Ceci nous permet de mettre en place différentes feuilles de données, qui introduisent différentes fenêtres de moyennage, de cumul, différents lags, etc. Ainsi, nous pouvons voir lesquels nous donnent les meilleurs résultats et de fait, retenir les données qui sont les plus pertinentes pour construire notre modèle.
+
+
+\newpage
+\section{Machine Learning}
+\subsection{Approche Linéaire }
+
+L'approche linéaire consiste à modéliser le système à l'aide de fonctions linéaires : c'est une approche assez simple à implémenter et à concevoir à l'aide de la descente de gradient, mais ce n'est pas la plus performante.  
+
+La régression linéaire est l’un des modèles les plus simples, les plus anciens et les plus utilisés en \textit{Machine Learning}. Elle appartient à la famille des modèles supervisés et est principalement employée pour résoudre des problèmes de \textbf{régression}, c’est-à-dire des tâches dont l’objectif est de prédire une variable numérique continue. 
+
+Le principe fondamental de la régression linéaire repose sur l’hypothèse qu’il existe une \textbf{relation linéaire} entre une ou plusieurs variables explicatives (ou variables indépendantes) et une variable cible (ou variable dépendante). Dans le cas le plus simple, cette relation peut s’écrire sous la forme suivante :
+\[
+y = ax + b
+\]
+où $x$ représente la variable explicative, $y$ la variable cible, $a$ le coefficient directeur de la droite et $b$ l’ordonnée à l’origine.
+
+\\
+De manière plus précise, si la dimension est $n > 1$. Soit $S = \{(\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\}$ l'ensemble d'apprentissage avec $\mathbf{x}_i \in \mathbb{R}^d$ et $y_i \in \mathbb{R}$.
+
+Choisissons la fonction hypothèse comme une fonction affine des caractéristiques d'entrée :
+$$h(\mathbf{x}; \mathbf{w}) = w_0 + \mathbf{w}^T \mathbf{x} = w_0 + \sum_{i=1}^{d} w_i x_i.$$
+
+Par abus de notation, on peut définir
+$$\mathbf{x} = \begin{bmatrix}
+1 \\
+x_1 \\
+\vdots \\
+x_d
+\end{bmatrix}, \quad \mathbf{w} = \begin{bmatrix}
+w_0 \\
+w_1 \\
+\vdots \\
+w_d
+\end{bmatrix}$$
+
+de sorte que
+$$h(\mathbf{x}; \mathbf{w}) = \mathbf{w}^T \mathbf{x} = \sum_{i=0}^{d} w_i x_i.$$
+\\
+
+Ainsi, l’objectif principal de la régression linéaire est de déterminer les paramètres du modèle (les coefficients $w_i$ et le biais $b$) de manière à minimiser l’erreur entre les valeurs prédites par le modèle et les valeurs réelles observées dans les données. Cette optimisation est généralement réalisée à l’aide de la \textbf{méthode des moindres carrés}, qui consiste à minimiser la somme des carrés des erreurs. \\
+
+
+Ici, nous nous sommes concentrées sur le modèle Ridge ou \textit{régularisation}. C'est une technique souvent utilisée pour contrôler le phénomène de sur-apprentissage (overfitting). \\
+On ajoute un terme de pénalité qui décourage les coefficients de prendre des valeurs trop grandes.
+
+$$\mathbf{w}^* = \operatorname{argmin}_{\mathbf{w}} E(\mathbf{w}) =: \frac{1}{2} \sum_{i=1}^{N} (w_0 + \mathbf{w}^T \mathbf{x}_i - y_i)^2 + \frac{\lambda}{2} \sum_{j=1}^{d} w_j^2$$
+
+où $\lambda \geq 0$ est le paramètre de pénalité de complexité. Cette technique est également appelée \textit{weight decay}.
+
+\subsubsection*{Remarques :}
+
+\begin{itemize}
+    \item[$\blacktriangleright$] Il n'y a pas de régularisation sur $w_0$
+    \item[$\blacktriangleright$] $\sum_{i=1}^{d} w_i^2 = \mathbf{w}^T \mathbf{w} = \|\mathbf{w}\|_2^2$
+    \item[$\blacktriangleright$] $\mathbf{w}^* = (X^T X + \lambda I_d)^{-1} X^T \mathbf{y}$
+\end{itemize}
+
+[GRAPHIQUES]
+
+
+
+
+Malgré sa simplicité, la régression linéaire présente certaines limites. En effet, elle suppose une relation linéaire entre les variables, ce qui n’est pas toujours le cas dans des situations réelles plus complexes. Elle peut donc manquer de précision lorsque les données présentent des interactions non linéaires ou des structures plus élaborées.
+
+\section{Les arbres de décision}
+
+Face aux limites des modèles linéaires, il est parfois nécessaire de recourir à des méthodes plus flexibles et plus puissantes, comme les \textbf{arbres de décision}. Ces derniers sont des modèles de \textit{Machine Learning} capables de s’adapter à des relations complexes entre les variables.
+
+Les arbres de décision peuvent être utilisés aussi bien pour des tâches de \textbf{classification}, où l’objectif est de prédire une catégorie ou une classe, que pour des tâches de \textbf{régression}, où l’on cherche à prédire une valeur numérique continue.
+
+La caractéristique la plus distinctive des arbres de décision est leur \textbf{structure arborescente}, qui contribue fortement à leur simplicité de compréhension et à leur grande interprétabilité. Un arbre de décision est composé de plusieurs éléments essentiels :
+
+\begin{itemize}
+    \item \textbf{La racine} : il s’agit du premier nœud situé en haut de l’arbre. Elle représente l’ensemble complet des données d’apprentissage et correspond au premier test effectué sur les données.
+    
+    \item \textbf{Les nœuds internes} : ces nœuds effectuent des tests conditionnels simples sur une variable explicative (par exemple, $x < c$). Chaque test divise l’espace des données en sous-ensembles, créant ainsi une partition binaire de l’espace des variables d’entrée.
+    
+    \item \textbf{Les nœuds terminaux}, également appelés \textbf{feuilles} : situés en bas de l’arbre, ils correspondent aux décisions finales du modèle. Dans le cas d’un arbre de régression, la valeur prédite dans une feuille est généralement la moyenne des valeurs de la variable cible associées aux observations présentes dans cette région.
+\end{itemize}
+
+De manière conventionnelle, les arbres de décision sont représentés à l’envers, avec la racine en haut et les feuilles en bas. Cette représentation visuelle illustre clairement la succession de décisions prises par le modèle, depuis l’ensemble global des données jusqu’à la prédiction finale.
+
+Grâce à leur structure intuitive, les arbres de décision sont particulièrement appréciés pour leur capacité à être interprétés facilement, contrairement à certains modèles plus complexes comme les réseaux de neurones. Toutefois, ils peuvent être sensibles au sur-apprentissage, ce qui nécessite souvent l’utilisation de techniques de régularisation ou de méthodes d’ensemble telles que les forêts aléatoires.
+
+
+
+
+En mettant en place les différentes stratégies, nous avons pu obtenir : \\
+
+
+GRAPHIQUE \\
+
+
+
+\subsection{Random Forest}
+[EXPLICATION ARBRE DE RECURSION]\\
+
+Random Forest est une technique basée sur les arbres de récursion, qui améliore les arbres baggués pour construire des arbres décorrélés.\\
+
+[EXPLICATION PLUS DETAILLE]
+
+
+\subsection{Gradient Boosting}
+Le Gradient Boosting est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au Random Forest qui construit ses arbres en parallèle et de manière indépendante, le Gradient Boosting construit ses arbres de manière séquentielle et additive.Chacunde ces arbres peut être relativement petit et, en général, cela améliorer progressivement la précision du modèle. \\
+
+
+
+\newpage
+\section{Deep Learning}
+
+Nous nous sommes ensuite penchés sur une approche différente : le Deep Learning. C’est un autre sous-domaine de l'apprentissage automatique qui utilise des réseaux de neurones artificiels composés de nombreuses couches pour analyser des données et prendre des décisions.
+
+En particulier, nous avons utilisé le modèle LSTM (Long Short-Term Memory, soit Mémoire à Long Terme et à Court Terme), qui est un type de réseau de neurones récurrents (RNN) particulièrement adapté pour traiter et prédire les séries temporelles et les séquences de données. (nb : savoir expliquer correctement toutes les gate etc.)\\
+
+
+Le Deep leanrning étant un domaine large, nous avons choisi de nous concentrer sur le modèle LSTM pour \textit{Long Short Term Memory}. Cette architecture permet au Réseau Neuronal Récurrent de condeerver plus facileemnt les informations sur plusieurs étapes temporelles récurrentes. 
+
+Les LSTM ne garantissent pas l’absence de problèmes de gradient
+disparaissant/explosif, mais elles offrent au modèle un moyen plus simple d’apprendre les dépendances à longue distance.\\
+
+
+
+Les résultats obtenus sont les suivants : \\
+
+[RESULTATS]
+
+\newpage
+\section{Comparaison des Résultats}
+
+tableau comparatifs de toutes les erreurs \\
+
+Expliquer pourquoi on n'a pas de meilleurs résultats : on manque de données (facteur humain, fait que l'eau sert pas que pour les centrales, etc.), etc ...
+
+\newpage
+
+
+\section{Propsective}
+
+Dans cette section, nous nous rapprochons de la démarche mise en place par le projet Clim2Power. Les données de Capacity Factors prédites à l'horizon 2050 par le modèle de LSTM que nous avons mis en place vont être passées en entrée du logiciel Times-France, afin de réaliser des mix énergétiques possibles pour la France en 2050, avec des contraintes fixées. \\
+
+\subsection{Prévision contre Prospective}
+
+Nous nous inscrivons ici dans une démarche de prospective. Aujourd'hui, elle correspond à une démarche de réflexion et d'anticipation autour de scénarios futurs pour notre société. Elle se met en place à travers une approche holistique : elle intègre un grand nombre de données et de paramètres, et ce afin de créer des scénarios qui pourraient coller le mieux avec notre réalité future, sans laisser de zones d'ombres, qui n'auront pas été traitées. \\
+
+Il est important de souligner que la prospective se différencie de la prévision, malgré de nombreuses ressemblances de prime abord.
+
+De fait, la prévision vise à des échelles de temps relativement courtes -del'ordre de l'année-, et se concentre sur l'élaboration d'un unique scénario : une ligne directrice unique qui serait à suivre.\\
+
+La prospective, quant à elle, vise à des horizons plus lointains (de l'ordre de la dizaine d'année), et s'inscrit dans l'exploration de nombreux scénarios. L'idée est ici de construire non pas un avenir, mais des avenirs, qui laisseraient la possibilité d'opérer à des changements majeurs dans certains secteurs donnés de notre société, selon l'évolution réelle qui se fera de cette dernière. Le but est donc d'explorer un grand nombre de scénarios afin d'avoir envisagé toutes les éventualités, et ainsi de ne pas être pris au dépourvu, lorsqu'il est nécessaire de fixer des directives dans des secteurs donnés (énergétique, économie, etc.).
+
+\subsection{Le Modèle Times-France}
+
+Le modèle Times-France est issu de la famille de modèles  MARKAL/TIMES (MARKet ALlocation/ The Integrated Markal Efom (Energy Flow Optimization Model) System). 
+
+Le programme de recherche en modélisation prospective du Centre de Mathématiques Appliquées repose sur l’optimisation d’une représentation technico-économique du système énergétique à l’aide du modèle MARKAL-TIMES (MARKet ALlocation/The Integrated Markal Efom System). Ces modèles de planification long terme sont au centre des activités de modélisation de la Chaire.
+
+
+
+Les modèles de planification à long terme issus de la famille des modèles MARKAL/TIMES (MARKet ALlocation/ The Integrated Markal Efom System) sont au centre des activités de modélisation de la Chaire. Cette démarche repose sur l’optimisation d’une représentation technico-économique du système énergétique. Le corpus méthodologique sur lequel elle s’appuie est développé au sein de l’ETSAP (Energy Technology Systems Analysis Program), programme de coopération internationale sous l’égide de l’Agence Internationale de l’Energie, AIE. Les périmètres géographiques de déploiement de cette approche au CMA sont la France, l’Europe et le Monde. Le CMA a particulièrement investi dans le développement du modèle France, unique, pour lequel des développements et améliorations sont permanents depuis 2003.
+
+D’abord focalisé sur la question électrique, le modèle a évolué successivement vers une représentation d’ensemble du système énergétique, puis vers un raffinement de certains sous-secteurs ou modules. Ces évolutions continues concernent notamment la biomasse, le secteur électrique, les secteurs résidentiels et des transports, et la révision des bases de données technologiques. Le modèle TIMES-France permet d’évaluer pour la France les implications de différents scénarios énergétiques : le facteur 4, la valeur du carbone, la sortie du nucléaire notamment.
+
+Dans le cadre de travaux de thèses récents, des approfondissements ont en particulier été menés sur la représentation de la flexibilité dans les systèmes multi-énergies, sur les filières gazières alternatives (power to gaz et biométhane), ainsi que sur l’influence d’une évolution des modes de vie sur le niveau de demande de services énergétiques des ménages.
+Voyons maintenant à quoi correspond concrètement le modèle Times-France, et comment il fonctionne.
+D’abord sur l’origine du modèle Times-France. Le CMA s'est concentré sur le développement d'un modèle de prospective pour la France, qui évolue en continu afin de prendre en compte les derniers changements des secteurs électrique, résidentiel, et des transports français notamment, ainsi que des innovations technologiques qui influent fortement sur la consommation énergétique.
+Il se base sur l'optimisation d'un modèle technico-économique du système énergétique, en cherchant à minimiser les coûts d’investissements réalisés dans le domaine de l’énergétique.
+Pour parler de son fonctionnement, Times est un modèle linéaire qui prend en entrée beaucoup de données (par exemple le nb de voitures individuelles, la capacité installée actuelle par source d’énergie, la croissance de la consommation énergétique per capita, la population estimée en France en 2050, etc…).
+Ensuite il établit des liens linéaires entre ces différentes données, afin de retranscrire au mieux la chaîne de demande énergétique en France.
+	On a ainsi un fonctionnement par ramification.
+Slide 59 :
+Maintenant, on peut donc se demander quelles conséquences on peut prévoir sur les installations électriques françaises à l’horizon 2050. Pour étudier cela, il était nécessaire de réfléchir au préalable à quel « endroit » du secteur énergétique nous allons intervenir via le modèle.
+Par exemple, si l’on se concentre sur la part du biogaz dans le mix énergétique français : est-ce que l’on influe sur la production/les imports (donc à la base), ou bien plus loin dans la ramification sur ceux qui ont la charge de l’acheminer sur le territoire français ?
+	Les deux sont rendus possibles par le modèle, et il faut donc mettre en place cette réflexion.
+En outre, on peut aussi jouer sur les contraintes législatives, et voir les impacts qu’elles ont sur le secteur énergétique. A titre d’illustration, on peut influer sur la taxe carbone et son évolution d’ici à 2050. Ainsi, est-ce qu’on impose que la production d’électricité soit décarbonée d’ici à 2050 (ce qui correspond à la trajectoire choisie par le gouvernement français), ou non ?
+On peut aussi s’intéresser à la sortie du nucléaire : est-elle envisageable à ce jour ? On peut souligner que ceci implique des changements majeurs dans un pays dont environ 65% de la production d’électricité est assurée par le nucléaire actuellement, et dont le but est d’avoir une électricité décarbonée en 2050.
+	Néanmoins, il s’agit du but même de la prospective de mettre en place tous ces scénarios, afin d’envisager le plus de futurs possibles, pour ne pas être pris au dépourvu.
+Le but pour nous a été d’apprendre à manipuler le modèle Times-France. Nous avons ainsi cherché à explorer deux scénarios extrêmes, qu’Oriane va à présent vous présenter.
+
+
+Tableau récapitulatif des paramètres : 
+\begin{center}
+\begin{tabular}{|m{4cm}|m{4cm}|m{4cm}|}
+   \hline
+   Évolution des paramètres & Scénario optimiste & Scénario pessimiste \\
+   \hline
+   Population & 70 millions & 70 millions \\
+   \hline
+   Demande en électricité & Stagnation par rapport à 2023 &  +1\% par an \\
+   \hline
+   Taxe carbone & Laissée au standard actuel & Supprimée \\
+   \hline
+   Capacity credit & PV : 5\% ; Wind onshore : 15\%  ; Wind offshore : 40\% & PV : 0 ; Wind onshore : 5\% ; Wind offshore : 15\% \\
+   \hline
+   Biogaz & 50 TWh de capacité installée & 16 TWh de capacité installée\\
+   \hline
+\end{tabular}
+\end{center}
+Le capacity credit permet de mesurer la fiabilité d'une centrale électrique. Il correspond à la fraction de la capcité installée d'une centrale électrique sur on peut compter avec certitude à un instant donné (typiquement lors d'un pic de demande).\\
+
+\newpage
+\section{Conclusion}
+(\textbf{\textit{Parler du projet ITER et de notre visite en tant qu'ouverture !!!}}) \\
+
+\end{document}
