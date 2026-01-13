@@ -224,6 +224,7 @@ où $x$ représente la variable explicative, $y$ la variable cible, $a$ le coeff
 
 \\
 De manière plus précise, si la dimension est $n > 1$. Soit $S = \{(\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\}$ l'ensemble d'apprentissage avec $\mathbf{x}_i \in \mathbb{R}^d$ et $y_i \in \mathbb{R}$.
+\\
 
 Choisissons la fonction hypothèse comme une fonction affine des caractéristiques d'entrée :
 $$h(\mathbf{x}; \mathbf{w}) = w_0 + \mathbf{w}^T \mathbf{x} = w_0 + \sum_{i=1}^{d} w_i x_i.$$
@@ -342,7 +343,7 @@ Expliquer pourquoi on n'a pas de meilleurs résultats : on manque de données (f
 \newpage
 
 
-\section{Propsective}
+\section{Prospective}
 
 Dans cette section, nous nous rapprochons de la démarche mise en place par le projet Clim2Power. Les données de Capacity Factors prédites à l'horizon 2050 par le modèle de LSTM que nous avons mis en place vont être passées en entrée du logiciel Times-France, afin de réaliser des mix énergétiques possibles pour la France en 2050, avec des contraintes fixées. \\
 
@@ -421,5 +422,7 @@ Tableau récapitulatif des paramètres :
 \newpage
 \section{Conclusion}
 (\textbf{\textit{Parler du projet ITER et de notre visite en tant qu'ouverture !!!}}) \\
+
+\section{Bibliographie}
 
 \end{document}
