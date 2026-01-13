@@ -332,21 +332,38 @@ disparaissant/explosif, mais elles offrent au modèle un moyen plus simple d’a
 
 Les résultats obtenus sont les suivants : \\
 
-[RESULTATS]
+On voit ici le meilleur modèle que nous ayons obtenu avec le LSTM sur les données de test (2023). On voit qu'il prédit de manière très précise le facteur de charge \\
+Cependant, nous avions commis une erreur méthodologique en n'ayant pas séparé les données d'entraînement et de validation. Nous avons donc refait les tests en séparant correctement les données, en plaçant 2022 en validation et 2023 en test. Cela permet d'obtenir un modèle plus robuste pour des données où nous ne connaissons pas le résultat car dans le cas précédent les paramètres du modèle sont optimisés pour une année.\\
+ Voici les résultats obtenus après cette modification: \\
 
+ On remarque que la prédiction sur 2023 est moins bonne que précédemment, mais reste tout de même très satisfaisante et meilleure que celle des autres modèles. \\
+[RESULTATS]
 \newpage
 \section{Comparaison des Résultats}
 
-tableau comparatifs de toutes les erreurs \\
+Tableau comparatifs de toutes les erreurs \\
 
-Expliquer pourquoi on n'a pas de meilleurs résultats : on manque de données (facteur humain, fait que l'eau sert pas que pour les centrales, etc.), etc ...
-
+En comparant toutes les différentes métriques d'erreurs, on remarque que le modèle LSTM est celui qui donne les meilleurs résultats, c'est pourquoi nous l'avons choisi pour la partie prospective. \\
+Facteurs limitants de nos résultats: 
+ - manque de données: nous n'avons accès qu'aux données de précipitation et température au niveau régional, ce qui est insuffisant pour prédire la facteur de charge. Les données d'ouvertures de barrages etc.. pourrait être plus pertinentes
+ - facteur humain: toute l'eau des pluies ne va pas dans les centrales hydroélectriques, il y a des pertes, des usages agricoles, touristiques etc.. comme nous l'avons vu lors de la visite de la centrale de Sainte Tule. En effet, le réglage du barrage sert aussi à maintenir un lac artificiel contenant des activtiés touristiques.
 \newpage
 
 
 \section{Propsective}
 
+Après avoir mis en place différents modèles de Machine Learning et de Deep Learning pour prédire les facteurs de capacité des barrages hydroélectriques au fil de l'eau en France, nous avons utilisé le modèle le plus performant, à savoir le LSTM, pour réaliser une étude prospective, ce qui constitue l'objectif principal de ce projet. \\
 Dans cette section, nous nous rapprochons de la démarche mise en place par le projet Clim2Power. Les données de Capacity Factors prédites à l'horizon 2050 par le modèle de LSTM que nous avons mis en place vont être passées en entrée du logiciel Times-France, afin de réaliser des mix énergétiques possibles pour la France en 2050, avec des contraintes fixées. \\
+
+A l'aide des données climatiques issues des scénarios RCP4.5 et RCP8.5, nous avons pu obtenir des prévisions de températures et de précipitations journalières en France à l'horizon 2050. En utilisant ces données comme entrées pour notre modèle LSTM, nous avons pu prédire les facteurs de capacité des barrages hydroélectriques au fil de l'eau en 2050. \\
+Nous obtenons les courbes ci-dessous: \\
+
+
+Critiques des résultats obtenus : 
+Si nous comparons avec les données de 2023 et 2022 en traçant l'enveloppe sur le même grapique, nous voyons que les variations ont quasiment disparus et que la moyenne est effectivement plus basse.
+Le lisage des données climatiques sur 10 ans a eu pour effet de lisser les variations journalières, ce qui n'est pas réaliste. En effet, les barrages au fil de l'eau sont très sensibles aux variations climatiques journalières, et il est donc important de conserver ces variations pour obtenir des prévisions plus précises. \\
+Une explication potentielle serait que les différence été hiver sont moindre car l'accumulation de neige en hiver est moins importante dans les scénarios climatiques futurs. Ce qui réduit la différence saisonnière. \\ 
+Il est en revanche très complexe de justifier l'abscence du puit de la fin de l'été.
 
 \subsection{Prévision contre Prospective}
 
