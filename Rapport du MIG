@@ -311,7 +311,20 @@ Random Forest est une technique basée sur les arbres de récursion, qui amélio
 
 
 \subsection{Gradient Boosting}
-Le Gradient Boosting est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au Random Forest qui construit ses arbres en parallèle et de manière indépendante, le Gradient Boosting construit ses arbres de manière séquentielle et additive.Chacunde ces arbres peut être relativement petit et, en général, cela améliorer progressivement la précision du modèle. \\
+Ensuite, nous avons cherché à développer un nouveau modèle de Machine Learning, s'appuyant sur l'algorithme de Gradient Boosting (ou XGBoost) pour améliorer encore plus nos prédictions. L'algorithme de Gradient Boosting utilise lui aussi des arbres de décision et un principe itératif. Cependant, contrairement à l'algorithme de Random Forest, qui va construire parallèlement et de manière indépendante et aléatoire des arbres faibles de décision, cette nouvelle approche procède à cette construction de façon séquentielle et perturbative. L'objectif étant toujours le même : on va augmenter le nombre d'arbres, et réduire leur taille afin de mettre en commun leurs résultats et d'éviter le phénomène de sur-apprentissage et la dépendance envers le set d'entrainement. 
+Ainsi, le principe de cette méthode est le suivant : on vient ajuster la prédiction des arbres de décision sur les résidus du modèle précédent (et non la réponse), prédiction que l'on ajoute ensuite au modèle pour aboutir à une fonction ajustée plus précise sur les erreurs des modèles précédents. 
+En pratique, on commence par initialiser les valeurs cibles par les cibles $\{ y_{i} \}$ de l'ensemble d'entrainement. 
+On construit dans un premier temps un premier arbre de décision qui fournit une première approximation de la valeur cible avec une fonction $f_{1}$.
+Le deuxième arbre que l'on construit va lui chercher à prédire les valeurs $y_{i} - f_{1}(x_{i})$ pour améliorer la prédiction du modèle, avec une fonction $f_{2}$.
+Et ainsi de suite de façon récursive, à chaque étape, on perturbe les résidus de la prédiction qui vient d'être réalisée $$r_{i} \longleftarrow r_{i} + \lambda f_{i}(x_{i})$$
+Le paramètre $\lambda$ correspond au taux d'apprentissage du modèle.
+
+A la fin, au bout de $M$ itérations, la valeur qui est renvoyée correspond à la somme de toutes les prédictions :  $$f(x) = \sum_{i = 1}^{M}\lambda f_{i}(x)$$
+Remarques : 
+- les arbres sont volontairement petits, avec un petit nombre de nœuds
+- le taux d'apprentissage est lui aussi volontairement réduit
+- Cela permet au modèle d'apprendre lentement et de limiter le sur-apprentissage en apprenant à préciser ses erreurs. 
+- Le nombre d'arbres, leur profondeur, le nombre de nœuds, le taux d'apprentissage,... sont autant d'hyper-paramètres à optimiser par validation croisée lors du développement du modèle. 
 
 
 
