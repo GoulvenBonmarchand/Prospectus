@@ -294,21 +294,41 @@ Grâce à leur structure intuitive, les arbres de décision sont particulièreme
 
 
 
-
-En mettant en place les différentes stratégies, nous avons pu obtenir : \\
-
-
-GRAPHIQUE \\
-
-
-
 \subsection{Random Forest}
-[EXPLICATION ARBRE DE RECURSION]\\
+\label{subsec:rf}
 
-Random Forest est une technique basée sur les arbres de récursion, qui améliore les arbres baggués pour construire des arbres décorrélés.\\
+Les \textbf{forêts aléatoires} (\textit{Random Forest}) constituent une méthode d'\textbf{ensemble} basée sur des \textbf{arbres de régression}. L’objectif est d’obtenir un modèle plus \textbf{robuste} qu’un arbre seul : en pratique, un arbre de décision peut très bien s’ajuster aux données d’entraînement mais il est souvent \textbf{instable} (forte variance). L’idée de Random Forest est donc de construire \emph{beaucoup} d’arbres volontairement variés, puis d’agréger leurs prédictions.
 
-[EXPLICATION PLUS DETAILLE]
+\subsubsection{Principe général : moyenne de plusieurs arbres}
+On entraîne $B$ arbres de régression $\{\hat f_b\}_{b=1}^B$ et, pour une entrée $\mathbf{x}$, la prédiction finale est simplement la \textbf{moyenne} :
+\[
+\hat f_{\text{RF}}(\mathbf{x})=\frac{1}{B}\sum_{b=1}^{B}\hat f_b(\mathbf{x}).
+\]
+Cette moyenne réduit fortement la variance : même si chaque arbre est imparfait, leur combinaison tend à lisser les erreurs et à améliorer la généralisation.
 
+\subsubsection{Pourquoi les arbres doivent être différents ? (décorrélation)}
+Si tous les arbres se ressemblent, les erreurs se ressemblent aussi, et la moyenne apporte peu. Random Forest introduit donc deux sources d’aléa pour construire des arbres \textbf{décorrélés} :
+
+\paragraph{1) Bagging (bootstrap)}
+Chaque arbre est entraîné sur un \textbf{échantillon bootstrap} du jeu de données (tirage avec remise). Cela signifie que deux arbres ne voient pas exactement les mêmes observations, ce qui change leurs découpes et leurs feuilles.
+
+\paragraph{2) Sous-ensemble aléatoire de variables à chaque split}
+À chaque nœud d’un arbre, au lieu de tester toutes les variables, l’algorithme ne considère qu’un \textbf{sous-ensemble aléatoire} de variables (hyperparamètre \texttt{max\_features}). Ainsi, même si une variable est très prédictive, elle n’est pas systématiquement utilisée en premier, ce qui force les arbres à explorer des structures différentes.
+
+\subsubsection{Estimation interne de l’erreur : \textit{Out-Of-Bag} (OOB)}
+Avec le bootstrap, environ un tiers des observations ne sont \textbf{pas} utilisées pour entraîner un arbre donné : ce sont les données \textit{out-of-bag} pour cet arbre. On peut donc estimer la performance sans jeu de validation dédié :
+pour chaque observation, on agrège uniquement les prédictions des arbres qui ne l’ont pas vue à l’entraînement, puis on calcule une erreur (MSE, MAE, $R^2$). Cette estimation OOB est très pratique pour comparer des réglages d’hyperparamètres.
+
+\subsubsection{Hyperparamètres principaux}
+Les paramètres les plus importants sont :
+\begin{itemize}
+    \item \texttt{n\_estimators} ($B$) : nombre d’arbres. Plus $B$ est grand, plus la prédiction se stabilise (au prix d’un coût de calcul supérieur).
+    \item \texttt{max\_features} : nombre de variables candidates à chaque split. Plus il est petit, plus les arbres sont décorrélés (mais un réglage trop faible peut dégrader la précision).
+    \item \texttt{max\_depth}, \texttt{min\_samples\_leaf} : contrôlent la complexité de chaque arbre et limitent le sur-apprentissage.
+\end{itemize}
+
+\subsubsection{Intérêt pour notre problème}
+Dans notre cas, la relation entre variables climatiques (températures, précipitations, effets retardés via lags, saisonnalité) et facteur de charge est \textbf{non-linéaire} et comporte des \textbf{interactions}. Une Random Forest capture naturellement ces non-linéarités, tout en restant plus stable qu’un arbre unique. Elle offre aussi des outils d’analyse comme l’\textbf{importance des variables} (quelles entrées contribuent le plus à la prédiction du CF).
 
 \subsection{Gradient Boosting}
 Ensuite, nous avons cherché à développer un nouveau modèle de Machine Learning, s'appuyant sur l'algorithme de Gradient Boosting (ou XGBoost) pour améliorer encore plus nos prédictions. L'algorithme de Gradient Boosting utilise lui aussi des arbres de décision et un principe itératif. Cependant, contrairement à l'algorithme de Random Forest, qui va construire parallèlement et de manière indépendante et aléatoire des arbres faibles de décision, cette nouvelle approche procède à cette construction de façon séquentielle et perturbative. L'objectif étant toujours le même : on va augmenter le nombre d'arbres, et réduire leur taille afin de mettre en commun leurs résultats et d'éviter le phénomène de sur-apprentissage et la dépendance envers le set d'entrainement. 
