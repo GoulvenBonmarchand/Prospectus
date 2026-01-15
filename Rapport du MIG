@@ -452,6 +452,61 @@ Tableau récapitulatif des paramètres :
 
 \newpage
 \section{Conclusion}
-(\textbf{\textit{Parler du projet ITER et de notre visite en tant qu'ouverture !!!}}) \\
+
+    Pour résumer, nous avons donc mis en place différents modèles de Machine Learning et de Deep Learning 
+pour prédire les facteurs de capacité des barrages hydroélectriques au fil de l'eau en France, 
+à partir de données météorologiques régionales (températures et précipitations) et journalières. 
+Après avoir comparé les performances de ces différents modèles, nous avons retenu le modèle LSTM 
+pour réaliser une étude prospective à l'horizon 2050. Cette étude comprend 2 scénarios : 
+un scénario optimiste et un scénario pessimiste, et a permis de calculer le mix énergétique 
+électrique français optimal du point de vu financier en fonction des contraintes fixées.\\
+
+    Néanmoins, plusieurs améliorations pourraient être apportées à notre travail. \\
+    
+    Tout d'abord, le modèle de prédiction des facteurs de capacité ne peut pas prendre en compte 
+l'influence humaine sur le débit des rivières. En effet, les barrages hydroélectriques sont régulés
+par des opérateurs humains qui ajustent les débits en fonction de divers facteurs.
+Par exemple, on ouvre les barrages pour répondre au pics de demande électrique,
+anticiper la fonte des glaces. Et, on les ferme pour maintenir des niveaux d'eau
+suffisants pour l'agriculture, l'approvisionnement en eau potable ou des activités 
+touristiques, comme nous l'avons vu lors de notre visite de la centrale de Sainte-Tulle, 
+avec le lac de Serre-Ponçon.\\
+
+    De plus, comme nous avons travaillé avec que deux données spatiales, il serait pertinent 
+d'en inclure davantage. Par exemple, en prenant en compte le profil des bassins versants,
+la couverture du sol, l'évapotranspiration, ou encore les données de débit des rivières.
+Ces données permettraient de mieux saisir la complexité du cycle de l'eau et d'améliorer
+la précision des prédictions. En outre, les données temporelles étant limitées à 9 ans,
+l'ajout de données historiques plus anciennes pourrait renforcer la robustesse des modèles.\\
+
+    Enfin, pour la partie prospective, puisque le modèle Times-France fonctionne majoritairement
+sur des relations linéaires, l'étude présente des incertitudes. Ensuite, le choix 
+des scénarios est arbitraire et peut fortement influencer les résultats obtenus. Il serait 
+donc intéressant d'explorer une gamme plus large de scénarios, en variant davantage les 
+sensibilités du modèle.\\
+
+    Nonobstant ces limites n'invalident aucunement notre travail, qui est une étude pospective
+et non une prévision absolue. L'objectif est d'anticiper les futurs possibles
+et de préparer des stratégies adaptées pour la gestion du système énergétique français,
+avec comme objectif la décarbonisation de l'économie.\\
+
+    Notons enfin que ce projet s'est concentré sur les moyens de production électrique
+classiques (hydroélectricité, nucléaire, éolien, solaire, thermique à flamme),
+et n'a pas pris en compte, par exemple, l'avènement potentiel de la fusion nucléaire,
+qui est actuellement porté par le projet ITER. Projet, localisé en France, 
+à Saint-Paul-lez-Durance, que nous nous avons la chance de visiter ! \\
+
+[INSERER PHOTO]
+
+    Pour finir, ce MIG fût une grande aventure, exigéeante sur le plan théorique, 
+puisque nous avons eu de nombreux cours sur les concepts mathématiques derrière 
+le machine learning et deep learning, mais aussi exenrichissante sur le plan pratique,
+car nous avons développé nos propres modèles. De surcroît, nous avons appris à travailler
+ensemble à 13, en se répartissant les tâches, en communiquant efficacement.\\
+
+    C'est pourquoi, nous souhaitons remercier très chaleureusement nos encadrants, Eddy [spap nom],
+Damien Corral et valentina Sessa, mais aussi tous les intervenants et partenaires : RTE, ITER, CMA. 
+
+[INSERER PHOTO]
 
 \end{document}
