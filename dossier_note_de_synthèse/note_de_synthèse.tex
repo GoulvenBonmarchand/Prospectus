@@ -244,11 +244,34 @@ Le \textit{Gradient Boosting }est également une technique utilisant les arbres 
 
 \section{Deep Learning}
 
-Nous nous sommes ensuite penchés sur une approche différente et plus complexe : le Deep Learning. C’est un autre sous-domaine de l'apprentissage automatique qui utilise des réseaux de neurones artificiels composés de nombreuses couches pour analyser des données et prendre des décisions.
+Nous nous sommes ensuite penchés sur une approche différente et plus complexe : le Deep Learning. C'est un autre sous-domaine de l'apprentissage automatique qui utilise des réseaux de neurones artificiels composés de nombreuses couches pour analyser des données et prendre des décisions. 
 
-En particulier, nous avons utilisé le modèle LSTM (Long Short-Term Memory, soit Mémoire à Long Terme et à Court Terme), qui est un type de réseau de neurones récurrents (RNN) particulièrement adapté pour traiter et prédire les séries temporelles et les séquences de données. 
+\paragraph{Choix d'architecture pour des séries temporelles.}
+Les réseaux de neurones \emph{feedforward} (par exemple les MLP) constituent une première approche efficace pour l'apprentissage supervisé, mais présentent une limitation structurelle lorsqu'ils sont appliqués à des \textbf{séries temporelles} : ils ne modélisent pas explicitement la \textbf{dépendance séquentielle}. En pratique, un MLP traite chaque observation comme un vecteur ``statique'' et, sauf ingénierie de variables spécifique (retards, agrégations, encodage positionnel), il n'intègre pas naturellement le fait que l'ordre des mesures porte de l'information. Cette absence de mémoire interne rend l'extraction de dynamiques temporelles (inertie, effets retardés, saisonnalités et interactions dans le temps) plus difficile et souvent dépendante du choix de la fenêtre et des \emph{features} construites.
 
-Les résultats obtenus sont les suivants : \\
+\paragraph{Réseaux récurrents et état caché.}
+Pour représenter cette dimension temporelle, nous avons retenu une architecture \textbf{récurrente} (\emph{Recurrent Neural Network}, RNN). Contrairement à une approche strictement instantanée, un RNN maintient un \textbf{état caché} $h_t$ mis à jour à chaque pas de temps : la prédiction à l'instant $t$ dépend à la fois de l'entrée courante $x_t$ et du contexte accumulé via $h_{t-1}$. Ce mécanisme confère au modèle une forme de mémoire, permettant d'exploiter des dépendances de court terme sans imposer explicitement une représentation \emph{ad hoc} des retards.
+
+\paragraph{LSTM et problème de disparition du gradient.}
+Nous avons plus spécifiquement implémenté un \textbf{LSTM} (\emph{Long Short-Term Memory}), conçu pour atténuer une difficulté majeure des RNN standards : la \textbf{disparition du gradient} (\emph{vanishing gradient}), qui limite l'apprentissage de dépendances à long terme lors de la rétropropagation à travers de longues séquences. Le LSTM introduit une \textbf{mémoire interne} (souvent notée $c_t$) et un système de \textbf{portes} (\emph{gates}) qui contrôlent le flux d'information :
+\begin{itemize}
+    \item une \emph{porte d'oubli} régule la conservation ou la suppression d'informations passées ;
+    \item une \emph{porte d'entrée} contrôle l'intégration de nouvelles informations ;
+    \item une \emph{porte de sortie} détermine la part de mémoire exposée à la couche suivante.
+\end{itemize}
+En régulant ces opérations, le LSTM stabilise l'apprentissage et permet de capturer des motifs temporels plus persistants que ceux généralement accessibles à un RNN simple.
+
+\paragraph{Stacked LSTM et apprentissage hiérarchique.}
+Afin d'augmenter la capacité de représentation, nous avons utilisé un \textbf{Stacked LSTM} (LSTM empilé), c'est-à-dire une architecture où plusieurs couches LSTM sont superposées. La sortie de la première couche sert d'entrée à la seconde, et ainsi de suite. Cette profondeur permet d'apprendre une hiérarchie de représentations : les couches inférieures tendent à capter des régularités locales (variations rapides, corrélations de court terme), tandis que les couches supérieures peuvent modéliser des structures plus \textbf{abstraites} et \textbf{non linéaires} (tendances, interactions complexes entre variables, dépendances plus longues).
+
+\paragraph{Résultats et limites de généralisation.}
+Dans notre cas, les performances obtenues sur l'année \textbf{2023} se sont révélées très élevées, malgré un ensemble de variables explicatives limité : les entrées sont principalement des \textbf{moyennes nationales}, construites à partir de fenêtres temporelles différentes pour les \textbf{précipitations} et les \textbf{températures}. Une première analyse a toutefois mis en évidence un biais méthodologique : l'absence initiale de \textbf{jeu de validation}. Sans séparation temporelle stricte, le modèle peut s'ajuster excessivement aux spécificités de 2023 (surapprentissage), ce qui conduit à des résultats flatteurs en apparence, mais à une \textbf{faible capacité de généralisation}.
+
+Nous avons ensuite corrigé ce point en introduisant un jeu de validation basé sur \textbf{2022} (découpage temporel). Les métriques sur 2023 restaient favorables, suggérant une bonne adéquation au régime de données observé. Néanmoins, une évaluation plus exigeante a montré une \textbf{résilience insuffisante} : lors d'une extrapolation vers des conditions projetées (par exemple \textbf{2050}), les prédictions produites n'étaient pas jugées recevables. Ce comportement indique que, malgré l'apport du LSTM pour apprendre des dépendances temporelles, le modèle demeure sensible aux \textbf{changements de distribution} (\emph{distribution shift}) et peut échouer hors du domaine couvert par les données d'entraînement (non-stationnarités climatiques, nouvelles amplitudes, nouvelles corrélations entre variables).
+
+\paragraph{Synthèse.}
+En synthèse, le choix d'un \textbf{(Stacked) LSTM} répond à l'enjeu de modélisation séquentielle et au problème de \emph{vanishing gradient} grâce aux mécanismes de portes. Toutefois, ces résultats soulignent que de bonnes performances \emph{in-sample} (ou sur une période proche) ne garantissent pas la robustesse en projection lointaine ; une validation temporelle stricte et des tests de généralisation hors distribution sont indispensables pour conclure à la fiabilité des prédictions à horizon 2050.
+
 
 
 \begin{figure}[!htp]

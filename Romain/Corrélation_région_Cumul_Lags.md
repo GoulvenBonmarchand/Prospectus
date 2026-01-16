@@ -21,7 +21,7 @@ sns.set_style("whitegrid")
 #chargement des données
 cf = pd.read_csv("data/CF_1d.csv", index_col="Date", parse_dates=True)
 tp = pd.read_csv("data/TP_1d.csv", index_col="Date", parse_dates=True)
-
+ta = pd.read_csv("data/TA_1d.csv", index_col="Date", parse_dates=True)
 
 cf_fr = cf.FR
 tp_fr = tp[tp.columns[tp.columns.str.startswith("FR")]]
@@ -106,7 +106,7 @@ def window_optimization_heatmap(min_window=1, max_window=180, step=2, search_lag
     )
 
     plt.title(
-        f"Sensibilité de la Corrélation à la taille du Cumul\n"
+        f"Corrélation par rapport à la taille du Cumul\n"
         f"Lag optimisé [0-{search_lag_max}] | Threshold={threshold}"
     )
     plt.xlabel("Taille de la fenêtre (Jours)")
