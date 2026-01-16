@@ -34,7 +34,7 @@
 \newtheorem*{remark}{Remarque :}
 \usepackage{csquotes}
 \addbibresource{}
-\usepackage[a4paper, left=2cm, right=2cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage[a4paper, left=1.5cm, right=1.5cm, top=2cm, bottom=2cm]{geometry}
 \usepackage[french]{babel}
 \usepackage{enumitem}
 \usepackage{setspace}
