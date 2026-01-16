@@ -34,7 +34,7 @@
 \newtheorem*{remark}{Remarque :}
 \usepackage{csquotes}
 \addbibresource{}
-\usepackage[a4paper, left=1.5cm, right=1.5cm, top=2cm, bottom=2cm]{geometry}
+\usepackage[a4paper, left=2cm, right=2cm, top=2.5cm, bottom=2.5cm]{geometry}
 \usepackage[french]{babel}
 \usepackage{enumitem}
 \usepackage{setspace}
@@ -366,6 +366,8 @@ où $\lambda \geq 0$ est le paramètre de pénalité de complexité. Cette techn
 
 Malgré sa simplicité, la régression linéaire présente certaines limites. En effet, elle suppose une relation linéaire entre les variables, ce qui n’est pas toujours le cas dans des situations réelles plus complexes. Elle peut donc manquer de précision lorsque les données présentent des interactions non linéaires ou des structures plus élaborées.
 
+\newpage
+
 \section{Les arbres de décision}
 
 Face aux limites des modèles linéaires, il est parfois nécessaire de recourir à des méthodes plus flexibles et plus puissantes, comme les \textbf{arbres de décision}. Ces derniers sont des modèles de \textit{Machine Learning} capables de s’adapter à des relations complexes entre les variables.
@@ -400,6 +402,21 @@ GRAPHIQUE \\
 [EXPLICATION ARBRE DE RECURSION]\\
 
 Random Forest est une technique basée sur les arbres de récursion, qui améliore les arbres baggués pour construire des arbres décorrélés.\\
+[Résultat du Random Forest]\\
+
+1. Sélection des variables et modélisation initiale \\
+Dans un premier temps, afin de constituer un jeu de données optimisé, une étude de corrélation a été menée pour identifier les régions ayant l'influence la plus significative sur le facteur de charge. Sur la base de ces données, nous avons implémenté une première association de modèles de type Random Forest (via la librairie Scikit-learn) avec les hyperparamètres par défaut.\\
+Les résultats obtenus sur les données brutes s'étant révélés insuffisants, une procédure d'optimisation par GridSearch a été appliquée. Bien que cette étape ait amélioré la précision globale, l'analyse des résidus a mis en évidence des motifs récurrents : les prédictions présentaient systématiquement une surestimation ou une sous-estimation par rapport aux données réelles.\\
+
+2. Caractérisation du biais systématique \\
+L'observation de ces écarts a suggéré l'existence d'un biais qu'il semblait possible de corriger linéairement. L'objectif a donc été de déterminer un « biais optimal » pour une année quelconque (ex: 2024, 2030). Pour ce faire, nous avons d'abord calculé le biais optimal rétrospectif pour chaque année de la période d'entraînement (2016-2022) en comparant les valeurs prédites aux valeurs réelles (voir code en annexe).\\
+
+3. Développement d'un modèle hybride \\
+Une première approche naïve, consistant à appliquer à l'année test (2023) la moyenne des biais des années précédentes, n'a pas produit de résultats concluants, contrairement à ce qui avait été observé avec la régression linéaire simple. La complexité du modèle Random Forest nécessitait une méthode de correction plus dynamique. \\
+Nous avons par conséquent élaboré une architecture hybride. Celle-ci intègre un modèle secondaire de régression linéaire, entraîné sur les biais optimaux historiques (8 points de données) ainsi que sur les variables météorologiques (températures et précipitations). Ainsi, pour une année donnée, ce modèle secondaire prédit le biais correctif à appliquer en fonction des conditions climatiques. \\
+
+4. Résultats et limites \\
+L'intégration de cette correction a permis d'améliorer significativement les performances du modèle. Toutefois, une surestimation persiste sur l'année 2023. Cette limitation est principalement attribuable à la faible taille de l'échantillon utilisé pour l'entraînement du modèle correctif (seulement 8 années d'historique). Une perspective d'amélioration consisterait à étendre la plage temporelle des données d'entraînement aux années antérieures à 2015, afin d'accroître la robustesse statistique de la correction de biais. \\
 
 [EXPLICATION PLUS DETAILLE]
 
@@ -407,6 +424,23 @@ Random Forest est une technique basée sur les arbres de récursion, qui amélio
 \subsection{Gradient Boosting}
 Le Gradient Boosting est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au Random Forest qui construit ses arbres en parallèle et de manière indépendante, le Gradient Boosting construit ses arbres de manière séquentielle et additive.Chacunde ces arbres peut être relativement petit et, en général, cela améliorer progressivement la précision du modèle. \\
 
+Ensuite, nous avons cherché à développer un nouveau modèle de Machine Learning, s'appuyant sur l'algorithme de Gradient Boosting (ou XGBoost) pour améliorer encore plus nos prédictions. \\
+L'algorithme de Gradient Boosting utilise lui aussi des arbres de décision et un principe itératif. Cependant, contrairement à l'algorithme de Random Forest, qui va construire parallèlement et de manière indépendante et aléatoire des arbres faibles de décision, cette nouvelle approche procède à cette construction de façon séquentielle et perturbative. L'objectif étant toujours le même : on va augmenter le nombre d'arbres, et réduire leur taille afin de mettre en commun leurs résultats et d'éviter le phénomène de sur-apprentissage et la dépendance envers le set d'entrainement. \\
+Ainsi, le principe de cette méthode est le suivant : on vient ajuster la prédiction des arbres de décision sur les résidus du modèle précédent (et non la réponse), prédiction que l'on ajoute ensuite au modèle pour aboutir à une fonction ajustée plus précise sur les erreurs des modèles précédents. \\
+En pratique, on commence par initialiser les valeurs cibles par les cibles $\{ y_{i} \}$ de l'ensemble d'entrainement. \\ 
+On construit dans un premier temps un premier arbre de décision qui fournit une première approximation de la valeur cible avec une fonction $f_{1}$. \\
+Le deuxième arbre que l'on construit va lui chercher à prédire les valeurs $y_{i} - f_{1}(x_{i})$ pour améliorer la prédiction du modèle, avec une fonction $f_{2}$. \\
+Et ainsi de suite de façon récursive, à chaque étape, on perturbe les résidus de la prédiction qui vient d'être réalisée $$r_{i} \longleftarrow r_{i} + \lambda f_{i}(x_{i})$$ 
+Le paramètre $\lambda$ correspond au taux d'apprentissage du modèle. \\
+
+A la fin, au bout de $M$ itérations, la valeur qui est renvoyée correspond à la somme de toutes les prédictions :  $$f(x) = \sum_{i = 1}^{M}\lambda f_{i}(x)$$
+Remarques :
+\begin{itemize} 
+    \item les arbres sont volontairement petits, avec un petit nombre de nœuds
+    \item le taux d'apprentissage est lui aussi volontairement réduit
+    \item Cela permet au modèle d'apprendre lentement et de limiter le sur-apprentissage en apprenant à préciser ses erreurs. 
+    \item Le nombre d'arbres, leur profondeur, le nombre de nœuds, le taux d'apprentissage,... sont autant d'hyper-paramètres à optimiser par validation croisée lors du développement du modèle. 
+\end{itemize}
 
 
 \newpage
@@ -422,8 +456,38 @@ Le Deep leanrning étant un domaine large, nous avons choisi de nous concentrer 
 Les LSTM ne garantissent pas l’absence de problèmes de gradient
 disparaissant/explosif, mais elles offrent au modèle un moyen plus simple d’apprendre les dépendances à longue distance.\\
 
+\subsection{Introduction aux Réseaux de Neurones}
 
 
+\subsection{Réseaux de Neurones Récurrents pour Séries Temporelles}
+Nous nous sommes ensuite penchés sur une approche différente et plus complexe : le Deep Learning. C'est un autre sous-domaine de l'apprentissage automatique qui utilise des réseaux de neurones artificiels composés de nombreuses couches pour analyser des données et prendre des décisions. 
+
+\paragraph{Choix d'architecture pour des séries temporelles} \\
+Les réseaux de neurones \emph{feedforward} (par exemple les MLP) constituent une première approche efficace pour l'apprentissage supervisé, mais présentent une limitation structurelle lorsqu'ils sont appliqués à des \textbf{séries temporelles} : ils ne modélisent pas explicitement la \textbf{dépendance séquentielle}. En pratique, un MLP traite chaque observation comme un vecteur ``statique'' et, sauf ingénierie de variables spécifique (retards, agrégations, encodage positionnel), il n'intègre pas naturellement le fait que l'ordre des mesures porte de l'information. Cette absence de mémoire interne rend l'extraction de dynamiques temporelles (inertie, effets retardés, saisonnalités et interactions dans le temps) plus difficile et souvent dépendante du choix de la fenêtre et des \emph{features} construites.
+
+\paragraph{Réseaux récurrents et état caché} \\
+Pour représenter cette dimension temporelle, nous avons retenu une architecture \textbf{récurrente} (\emph{Recurrent Neural Network}, RNN). Contrairement à une approche strictement instantanée, un RNN maintient un \textbf{état caché} $h_t$ mis à jour à chaque pas de temps : la prédiction à l'instant $t$ dépend à la fois de l'entrée courante $x_t$ et du contexte accumulé via $h_{t-1}$. Ce mécanisme confère au modèle une forme de mémoire, permettant d'exploiter des dépendances de court terme sans imposer explicitement une représentation \emph{ad hoc} des retards.
+
+\paragraph{LSTM et problème de disparition du gradient} \\
+Nous avons plus spécifiquement implémenté un \textbf{LSTM} (\emph{Long Short-Term Memory}), conçu pour atténuer une difficulté majeure des RNN standards : la \textbf{disparition du gradient} (\emph{vanishing gradient}), qui limite l'apprentissage de dépendances à long terme lors de la rétropropagation à travers de longues séquences. Le LSTM introduit une \textbf{mémoire interne} (souvent notée $c_t$) et un système de \textbf{portes} (\emph{gates}) qui contrôlent le flux d'information :
+\begin{itemize}
+    \item une \emph{porte d'oubli} régule la conservation ou la suppression d'informations passées ;
+    \item une \emph{porte d'entrée} contrôle l'intégration de nouvelles informations ;
+    \item une \emph{porte de sortie} détermine la part de mémoire exposée à la couche suivante.
+\end{itemize}
+En régulant ces opérations, le LSTM stabilise l'apprentissage et permet de capturer des motifs temporels plus persistants que ceux généralement accessibles à un RNN simple.
+
+\paragraph{Stacked LSTM et apprentissage hiérarchique} \\
+Afin d'augmenter la capacité de représentation, nous avons utilisé un \textbf{Stacked LSTM} (LSTM empilé), c'est-à-dire une architecture où plusieurs couches LSTM sont superposées. La sortie de la première couche sert d'entrée à la seconde, et ainsi de suite. Cette profondeur permet d'apprendre une hiérarchie de représentations : les couches inférieures tendent à capter des régularités locales (variations rapides, corrélations de court terme), tandis que les couches supérieures peuvent modéliser des structures plus \textbf{abstraites} et \textbf{non linéaires} (tendances, interactions complexes entre variables, dépendances plus longues).
+
+\paragraph{Résultats et limites de généralisation} \\
+Dans notre cas, les performances obtenues sur l'année \textbf{2023} se sont révélées très élevées, malgré un ensemble de variables explicatives limité : les entrées sont principalement des \textbf{moyennes nationales}, construites à partir de fenêtres temporelles différentes pour les \textbf{précipitations} et les \textbf{températures}. Une première analyse a toutefois mis en évidence un biais méthodologique : l'absence initiale de \textbf{jeu de validation}. Sans séparation temporelle stricte, le modèle peut s'ajuster excessivement aux spécificités de 2023 (surapprentissage), ce qui conduit à des résultats flatteurs en apparence, mais à une \textbf{faible capacité de généralisation}.
+
+
+\paragraph{Synthèse} \\
+En synthèse, le choix d'un \textbf{(Stacked) LSTM} répond à l'enjeu de modélisation séquentielle et au problème de \emph{vanishing gradient} grâce aux mécanismes de portes. Toutefois, ces résultats soulignent que de bonnes performances \emph{in-sample} (ou sur une période proche) ne garantissent pas la robustesse en projection lointaine ; une validation temporelle stricte et des tests de généralisation hors distribution sont indispensables pour conclure à la fiabilité des prédictions à horizon 2050.
+
+\subsection{Résultats}
 Les résultats obtenus sont les suivants : \\
 
 [RESULTATS]
@@ -436,11 +500,47 @@ tableau comparatifs de toutes les erreurs \\
 Expliquer pourquoi on n'a pas de meilleurs résultats : on manque de données (facteur humain, fait que l'eau sert pas que pour les centrales, etc.), etc ...
 
 \newpage
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|} % Ajout des | pour les lignes verticales
+    \hline % Ligne horizontale supérieure
+    \textbf{Modèle} & \textbf{R}^2 & \textbf{nMAE} & \textbf{nRMSE} & \textbf{R} \\
+    \hline % Ligne horizontale séparant les en-têtes des données
+    Ridge Regression & 0.58&0.14 & 0.18& 0.76\\
+    \hline
+    Random Forest & 0.66 & 0.16 & 0.19 & 0.83\\
+    \hline
+    Gradient Boosting & 0.66 &0.13 & 0.17 &0.82\\
+    \hline
+    LSTM & 0.71 &0.11 & 0.15& 0.85\\
+    \hline % Ligne horizontale inférieure
+    \end{tabular}
+    \caption{Tableau récapitulatif des meilleurs résultats par modèle} % Caption plus claire
+    \label{tab:tableau_recapitulatif_resultats} % Label standardisé
+\end{table}
+
+En comparant toutes les différentes métriques d'erreurs, on remarque que le modèle LSTM est celui qui donne les meilleurs résultats, c'est pourquoi nous l'avons choisi pour la partie prospective. \\
+Facteurs limitants de nos résultats: 
+\begin{itemize}
+    \item manque de données: nous n'avons accès qu'aux données de précipitation et température au niveau régional, ce qui est insuffisant pour prédire la facteur de charge. Les données d'ouvertures de barrages etc.. pourrait être plus pertinentes
+    \item facteur humain: toute l'eau des pluies ne va pas dans les centrales hydroélectriques, il y a des pertes, des usages agricoles, touristiques etc.. comme nous l'avons vu lors de la visite de la centrale de Sainte Tule. En effet, le réglage du barrage sert aussi à maintenir un lac artificiel contenant des activtiés touristiques.
+\end{itemize}
+ \newpage
 
 
 \section{Prospective}
 
 Dans cette section, nous nous rapprochons de la démarche mise en place par le projet Clim2Power. Les données de Capacity Factors prédites à l'horizon 2050 par le modèle de LSTM que nous avons mis en place vont être passées en entrée du logiciel Times-France, afin de réaliser des mix énergétiques possibles pour la France en 2050, avec des contraintes fixées. \\
+
+A l'aide des données climatiques issues des scénarios RCP4.5 et RCP8.5, nous avons pu obtenir des prévisions de températures et de précipitations journalières en France à l'horizon 2050. En utilisant ces données comme entrées pour notre modèle LSTM, nous avons pu prédire les facteurs de capacité des barrages hydroélectriques au fil de l'eau en 2050. \\
+Nous obtenons les courbes ci-dessous: \\
+
+
+Critiques des résultats obtenus : \\
+Si nous comparons avec les données de 2023 et 2022 en traçant l'enveloppe sur le même grapique, nous voyons que les variations ont quasiment disparus et que la moyenne est effectivement plus basse. \\
+Le lissage des données climatiques sur 10 ans a eu pour effet de lisser les variations journalières, ce qui n'est pas réaliste. En effet, les barrages au fil de l'eau sont très sensibles aux variations climatiques journalières, et il est donc important de conserver ces variations pour obtenir des prévisions plus précises. \\
+Une explication potentielle serait que les différence été hiver sont moindre car l'accumulation de neige en hiver est moins importante dans les scénarios climatiques futurs. Ce qui réduit la différence saisonnière. \\ 
+Il est en revanche très complexe de justifier l'abscence du puit de la fin de l'été.
 
 \subsection{Prévision contre Prospective}
 
