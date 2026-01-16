@@ -578,8 +578,6 @@ Nous avons ensuite corrigé ce point en introduisant un jeu de validation basé 
 \section{Résultats}
 Les résultats obtenus selon les modèles sont les suivants : \\
 
-
-\newpage
 \begin{table}[H]
     \centering
     \begin{tabular}{|c|c|c|c|c|} % Ajout des | pour les lignes verticales
