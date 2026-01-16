@@ -34,7 +34,7 @@
 \newtheorem*{remark}{Remarque :}
 \usepackage{csquotes}
 \addbibresource{}
-\usepackage[a4paper, left=1.5cm, right=1.5cm, top=2cm, bottom=2cm]{geometry}
+\usepackage[a4paper, left=2cm, right=2cm, top=2.5cm, bottom=2.5cm]{geometry}
 \usepackage[french]{babel}
 \usepackage{enumitem}
 \usepackage{setspace}
@@ -321,6 +321,8 @@ s
 
 Et, si ces résultats ne sont pas exploitables, ils montrent néanmoins qu'il est possible d'améliorer significatviement la performance d'un modèle. 
 Cependant, du fait de sa simplicité, la régression linéaire présente certaines limites. En effet, elle suppose une relation linéaire entre les variables, ce qui n’est pas toujours le cas dans des situations réelles plus complexes. Elle peut donc manquer de précision lorsque les données présentent des interactions non linéaires ou des structures plus élaborées.
+
+\newpage
 
 \section{Les arbres de décision}
 
