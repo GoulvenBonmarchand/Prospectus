@@ -124,23 +124,25 @@ TOOFA	Keanu\\[1.5cm]
 \\
 
 (\textbf{\textit{Parler de la visite de la centrale hydraulique en intro !!!}}) \\
-A l’heure où la question du climat et de l’énergie s'impose à nous, le lien entre les deux est de plus en plus étudié et exploré. Nous pouvons en effet désormais trouver des modèles énergétiques qui intègrent la variabilité climatique, ce qui n’était pas le cas il y a quelques années. En particulier, la variabilité climatique est particulièrement intéressante pour le domaine de l'hydroélectricité, qui représente près de $14 \%$ de la production française et qui dépend directement des précipitations par exemple. \\
+A l’heure où la question du climat et de l’énergie s'impose à nous, le lien entre les deux est de plus en plus étudié et exploré. Nous pouvons en effet désormais trouver des modèles énergétiques qui intègrent la variabilité climatique, ce qui n’était pas le cas il y a quelques années. En particulier, la variabilité climatique est particulièrement intéressante pour le domaine de l'hydroélectricité, qui représente près de $14 \%$ de la production française et qui dépend directement des précipitations par exemple. L'intérêt pour l'hydroélectricité est un phénomène mondial avec une capacité installée supplémentaire de 34 GW dans monde en 2022, ce qui peut s'expliquer par une faible empreinte carbone, une efficacité et flexibilité de cette énergie. \\
 
 Au cours de ces trois semaines de MIG, nous avons ainsi étudié \textbf{comment intégrer la variabilité climatique dans les barrages hydrauliques au fil de l'eau ?} \\
 
-En effet, il existe deux principaux types de barrages : les barrages de moyenne ou haute chute, caractérisés par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute (de 30m à >300m), et les barrages au fil de l'eau, caractérisés par une implantation le long de grands fleuves ou grandes rivières, avec un débit très fort et une faible hauteur de chute (moins de 30m). Localisés au sein de la région PACA, nous nous sommes concentrés sur les barrages au fil de l'eau, prépondérants dans la région.(\textbf{\textit{rajouter deux trois chiffres dessus}})Étant placés directement le long des fleuves et rivières, ils dépendent très fortement des conditions climatiques.
+En effet, il existe deux principaux types de barrages : les barrages de moyenne ou haute chute, caractérisés par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute (de 30m à >300m), et les barrages au fil de l'eau, caractérisés par une implantation le long de grands fleuves ou grandes rivières, avec un débit très fort et une faible hauteur de chute (moins de 30m). Localisés au sein de la région PACA, nous nous sommes concentrés sur les barrages au fil de l'eau, beaucoup plus sujets aux variabilités climatiques: étant placés directement le long des fleuves et rivières, ils dépendent très fortement du débit de l'eau et donc des conditions climatiques variables. Dans le cadre de notre projet, nous avons eu l'opportunité de visiter la centrale hydraulique de Sainte-Tulle 1. Le jour de notre visite, la température était relativement basse et les 4 turbines de la centrale tournaient en permanence, ce qui souligne que l'hydroélectricité répond à un besoin du réseau électrique lorsqu'il est mis sous tension. 
 
 
 De manière plus concrète, nous avons donc essayé de modéliser, de différentes manières, la puissance électrique que pourront fournir les barrages en France, en connaissant le volume de précipitations ainsi que la température. On réalise ces prédictions via le facteur de capacité, ou encore facteur de charge (CF, capacity factor), définit ainsi : \\ $$ CF = \frac{P_{produite}}{P_{capacit\acute e \ install\acute ee}}$$
 
-Après s’être entrainé sur des données pour les années 2015 à 2022, puis validé en testant nos modèles sur les données de 2023, nous avons appliqué cela aux années futures, en essayant de modéliser des situations précises à l’horizon 2050. 
+Après s’être entrainé sur des données pour les années 2015 à 2022, puis validé en testant nos modèles sur les données de 2023, nous avons appliqué cela aux années futures, en essayant de modéliser des situations précises à l’horizon 2050. L'objectif final étant d'utiliser ces facteurs de capacités simulés afin de réaliser un modèle de prospective permettant de fournir des scénarios d'évolution du système énergétique français d'ici 2050.
 
 \newpage
 
 \section{Méthodologie }
 
 Afin de faire ces diverses prévisions, nous avons choisi de faire usage de l'apprentissage automatique, également connu sous le nom de Machine Learning, ainsi que du Deep Learning. \\
-Les données dont nous disposons correspondent aux valeurs de températures et de précipitations au niveau régional, ainsi que les CF au niveau national, pour des données journalières allant du premier janvier 2015 au 31 décembre 2023. On cherche donc à prédire le facteur de capacité national à partir des données météorologiques.\\
+On cherche donc à prédire le facteur de capacité national à partir des données météorologiques. On a à notre disposition trois ensembles de données journalières des températures et des précipitations à l'échelle NUTS2 ainsi que du facteur de charge national, du premier janvier 2015 au 31 décembre 2023. Notre objectif va être de pouvoir prédire le facteur de charge futur à partir des données de températures et de précipitations passées. L’échelle NUTS2 correspond à un découpage régional dans toute l'Union Européenne, et on a donc eu un premier travail d’extraction des données pour extraire seulement les données de France métropolitaine qui seront utilisées par la suite. Dans une première approche, on a pris les données en moyenne nationale mais nos résultats se sont retrouvés limités. En effet, il semble pertinent d’inclure ce découpage régional car il faut différencier les régions possédant peu d’hydroélectrique au fil de l’eau par rapport à celles en possédant beaucoup et différencier les régions montagneuses et planes. Le premier graphe à gauche est un nuage de points en 3 dimensions, chacun des axes représentant respectivement les données de CF, de précipitations et de températures, et les deux à côté sont des projections du facteur de capacité en fonction des températures et des précipitations. On ne voit pas de tendance qui se dégage qui nous permettrait de percevoir immédiatement ce lien entre températures, précipitations et facteur de capacité, d’où l’intérêt de l’utilisation du machine Learning et du deep learning afin de réaliser la prévision. Si on ne trouve pas de lien, c’est parce que le modèle physique est complexe. En effet, en s'intéressant au cycle de l’eau, les échanges et transferts de l’eau sous multiples formes sont nombreux et ne peuvent être prédits avec les simples données régionales de températures et de précipitations. On ne peut pas trouver de lien direct mais on peut quand même analyser ces données pour avoir un recul critique sur la prévision. Deux points clés se dégagent, une tendance pour le CF moyen de baisser au fil des années donc il serait cohérent que le facteur de charge futur soit en moyenne inférieur aux données que l’on possède. Le deuxième point clé est la saisonalité du facteur de charge où l'on peut voir la répétition annuelle d'un motif, on s’attend également à retrouver cette saisonnalité du facteur de charge dans les prédictions futures.
+
+\\
 
 \subsection{Apprentissage Automatique}
 
@@ -292,21 +294,41 @@ Grâce à leur structure intuitive, les arbres de décision sont particulièreme
 
 
 
-
-En mettant en place les différentes stratégies, nous avons pu obtenir : \\
-
-
-GRAPHIQUE \\
-
-
-
 \subsection{Random Forest}
-[EXPLICATION ARBRE DE RECURSION]\\
+\label{subsec:rf}
 
-Random Forest est une technique basée sur les arbres de récursion, qui améliore les arbres baggués pour construire des arbres décorrélés.\\
+Les \textbf{forêts aléatoires} (\textit{Random Forest}) constituent une méthode d'\textbf{ensemble} basée sur des \textbf{arbres de régression}. L’objectif est d’obtenir un modèle plus \textbf{robuste} qu’un arbre seul : en pratique, un arbre de décision peut très bien s’ajuster aux données d’entraînement mais il est souvent \textbf{instable} (forte variance). L’idée de Random Forest est donc de construire \emph{beaucoup} d’arbres volontairement variés, puis d’agréger leurs prédictions.
 
-[EXPLICATION PLUS DETAILLE]
+\subsubsection{Principe général : moyenne de plusieurs arbres}
+On entraîne $B$ arbres de régression $\{\hat f_b\}_{b=1}^B$ et, pour une entrée $\mathbf{x}$, la prédiction finale est simplement la \textbf{moyenne} :
+\[
+\hat f_{\text{RF}}(\mathbf{x})=\frac{1}{B}\sum_{b=1}^{B}\hat f_b(\mathbf{x}).
+\]
+Cette moyenne réduit fortement la variance : même si chaque arbre est imparfait, leur combinaison tend à lisser les erreurs et à améliorer la généralisation.
 
+\subsubsection{Pourquoi les arbres doivent être différents ? (décorrélation)}
+Si tous les arbres se ressemblent, les erreurs se ressemblent aussi, et la moyenne apporte peu. Random Forest introduit donc deux sources d’aléa pour construire des arbres \textbf{décorrélés} :
+
+\paragraph{1) Bagging (bootstrap)}
+Chaque arbre est entraîné sur un \textbf{échantillon bootstrap} du jeu de données (tirage avec remise). Cela signifie que deux arbres ne voient pas exactement les mêmes observations, ce qui change leurs découpes et leurs feuilles.
+
+\paragraph{2) Sous-ensemble aléatoire de variables à chaque split}
+À chaque nœud d’un arbre, au lieu de tester toutes les variables, l’algorithme ne considère qu’un \textbf{sous-ensemble aléatoire} de variables (hyperparamètre \texttt{max\_features}). Ainsi, même si une variable est très prédictive, elle n’est pas systématiquement utilisée en premier, ce qui force les arbres à explorer des structures différentes.
+
+\subsubsection{Estimation interne de l’erreur : \textit{Out-Of-Bag} (OOB)}
+Avec le bootstrap, environ un tiers des observations ne sont \textbf{pas} utilisées pour entraîner un arbre donné : ce sont les données \textit{out-of-bag} pour cet arbre. On peut donc estimer la performance sans jeu de validation dédié :
+pour chaque observation, on agrège uniquement les prédictions des arbres qui ne l’ont pas vue à l’entraînement, puis on calcule une erreur (MSE, MAE, $R^2$). Cette estimation OOB est très pratique pour comparer des réglages d’hyperparamètres.
+
+\subsubsection{Hyperparamètres principaux}
+Les paramètres les plus importants sont :
+\begin{itemize}
+    \item \texttt{n\_estimators} ($B$) : nombre d’arbres. Plus $B$ est grand, plus la prédiction se stabilise (au prix d’un coût de calcul supérieur).
+    \item \texttt{max\_features} : nombre de variables candidates à chaque split. Plus il est petit, plus les arbres sont décorrélés (mais un réglage trop faible peut dégrader la précision).
+    \item \texttt{max\_depth}, \texttt{min\_samples\_leaf} : contrôlent la complexité de chaque arbre et limitent le sur-apprentissage.
+\end{itemize}
+
+\subsubsection{Intérêt pour notre problème}
+Dans notre cas, la relation entre variables climatiques (températures, précipitations, effets retardés via lags, saisonnalité) et facteur de charge est \textbf{non-linéaire} et comporte des \textbf{interactions}. Une Random Forest capture naturellement ces non-linéarités, tout en restant plus stable qu’un arbre unique. Elle offre aussi des outils d’analyse comme l’\textbf{importance des variables} (quelles entrées contribuent le plus à la prédiction du CF).
 
 [Résultat du Random Forest]
 1. Sélection des variables et modélisation initiale
@@ -326,7 +348,20 @@ L'intégration de cette correction a permis d'améliorer significativement les p
 
 
 \subsection{Gradient Boosting}
-Le Gradient Boosting est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au Random Forest qui construit ses arbres en parallèle et de manière indépendante, le Gradient Boosting construit ses arbres de manière séquentielle et additive.Chacunde ces arbres peut être relativement petit et, en général, cela améliorer progressivement la précision du modèle. \\
+Ensuite, nous avons cherché à développer un nouveau modèle de Machine Learning, s'appuyant sur l'algorithme de Gradient Boosting (ou XGBoost) pour améliorer encore plus nos prédictions. L'algorithme de Gradient Boosting utilise lui aussi des arbres de décision et un principe itératif. Cependant, contrairement à l'algorithme de Random Forest, qui va construire parallèlement et de manière indépendante et aléatoire des arbres faibles de décision, cette nouvelle approche procède à cette construction de façon séquentielle et perturbative. L'objectif étant toujours le même : on va augmenter le nombre d'arbres, et réduire leur taille afin de mettre en commun leurs résultats et d'éviter le phénomène de sur-apprentissage et la dépendance envers le set d'entrainement. 
+Ainsi, le principe de cette méthode est le suivant : on vient ajuster la prédiction des arbres de décision sur les résidus du modèle précédent (et non la réponse), prédiction que l'on ajoute ensuite au modèle pour aboutir à une fonction ajustée plus précise sur les erreurs des modèles précédents. 
+En pratique, on commence par initialiser les valeurs cibles par les cibles $\{ y_{i} \}$ de l'ensemble d'entrainement. 
+On construit dans un premier temps un premier arbre de décision qui fournit une première approximation de la valeur cible avec une fonction $f_{1}$.
+Le deuxième arbre que l'on construit va lui chercher à prédire les valeurs $y_{i} - f_{1}(x_{i})$ pour améliorer la prédiction du modèle, avec une fonction $f_{2}$.
+Et ainsi de suite de façon récursive, à chaque étape, on perturbe les résidus de la prédiction qui vient d'être réalisée $$r_{i} \longleftarrow r_{i} + \lambda f_{i}(x_{i})$$
+Le paramètre $\lambda$ correspond au taux d'apprentissage du modèle.
+
+A la fin, au bout de $M$ itérations, la valeur qui est renvoyée correspond à la somme de toutes les prédictions :  $$f(x) = \sum_{i = 1}^{M}\lambda f_{i}(x)$$
+Remarques : 
+- les arbres sont volontairement petits, avec un petit nombre de nœuds
+- le taux d'apprentissage est lui aussi volontairement réduit
+- Cela permet au modèle d'apprendre lentement et de limiter le sur-apprentissage en apprenant à préciser ses erreurs. 
+- Le nombre d'arbres, leur profondeur, le nombre de nœuds, le taux d'apprentissage,... sont autant d'hyper-paramètres à optimiser par validation croisée lors du développement du modèle. 
 
 
 
@@ -347,21 +382,38 @@ disparaissant/explosif, mais elles offrent au modèle un moyen plus simple d’a
 
 Les résultats obtenus sont les suivants : \\
 
-[RESULTATS]
+On voit ici le meilleur modèle que nous ayons obtenu avec le LSTM sur les données de test (2023). On voit qu'il prédit de manière très précise le facteur de charge \\
+Cependant, nous avions commis une erreur méthodologique en n'ayant pas séparé les données d'entraînement et de validation. Nous avons donc refait les tests en séparant correctement les données, en plaçant 2022 en validation et 2023 en test. Cela permet d'obtenir un modèle plus robuste pour des données où nous ne connaissons pas le résultat car dans le cas précédent les paramètres du modèle sont optimisés pour une année.\\
+ Voici les résultats obtenus après cette modification: \\
 
+ On remarque que la prédiction sur 2023 est moins bonne que précédemment, mais reste tout de même très satisfaisante et meilleure que celle des autres modèles. \\
+[RESULTATS]
 \newpage
 \section{Comparaison des Résultats}
 
-tableau comparatifs de toutes les erreurs \\
+Tableau comparatifs de toutes les erreurs \\
 
-Expliquer pourquoi on n'a pas de meilleurs résultats : on manque de données (facteur humain, fait que l'eau sert pas que pour les centrales, etc.), etc ...
-
+En comparant toutes les différentes métriques d'erreurs, on remarque que le modèle LSTM est celui qui donne les meilleurs résultats, c'est pourquoi nous l'avons choisi pour la partie prospective. \\
+Facteurs limitants de nos résultats: 
+ - manque de données: nous n'avons accès qu'aux données de précipitation et température au niveau régional, ce qui est insuffisant pour prédire la facteur de charge. Les données d'ouvertures de barrages etc.. pourrait être plus pertinentes
+ - facteur humain: toute l'eau des pluies ne va pas dans les centrales hydroélectriques, il y a des pertes, des usages agricoles, touristiques etc.. comme nous l'avons vu lors de la visite de la centrale de Sainte Tule. En effet, le réglage du barrage sert aussi à maintenir un lac artificiel contenant des activtiés touristiques.
 \newpage
 
 
 \section{Propsective}
 
+Après avoir mis en place différents modèles de Machine Learning et de Deep Learning pour prédire les facteurs de capacité des barrages hydroélectriques au fil de l'eau en France, nous avons utilisé le modèle le plus performant, à savoir le LSTM, pour réaliser une étude prospective, ce qui constitue l'objectif principal de ce projet. \\
 Dans cette section, nous nous rapprochons de la démarche mise en place par le projet Clim2Power. Les données de Capacity Factors prédites à l'horizon 2050 par le modèle de LSTM que nous avons mis en place vont être passées en entrée du logiciel Times-France, afin de réaliser des mix énergétiques possibles pour la France en 2050, avec des contraintes fixées. \\
+
+A l'aide des données climatiques issues des scénarios RCP4.5 et RCP8.5, nous avons pu obtenir des prévisions de températures et de précipitations journalières en France à l'horizon 2050. En utilisant ces données comme entrées pour notre modèle LSTM, nous avons pu prédire les facteurs de capacité des barrages hydroélectriques au fil de l'eau en 2050. \\
+Nous obtenons les courbes ci-dessous: \\
+
+
+Critiques des résultats obtenus : 
+Si nous comparons avec les données de 2023 et 2022 en traçant l'enveloppe sur le même grapique, nous voyons que les variations ont quasiment disparus et que la moyenne est effectivement plus basse.
+Le lisage des données climatiques sur 10 ans a eu pour effet de lisser les variations journalières, ce qui n'est pas réaliste. En effet, les barrages au fil de l'eau sont très sensibles aux variations climatiques journalières, et il est donc important de conserver ces variations pour obtenir des prévisions plus précises. \\
+Une explication potentielle serait que les différence été hiver sont moindre car l'accumulation de neige en hiver est moins importante dans les scénarios climatiques futurs. Ce qui réduit la différence saisonnière. \\ 
+Il est en revanche très complexe de justifier l'abscence du puit de la fin de l'été.
 
 \subsection{Prévision contre Prospective}
 
@@ -437,6 +489,61 @@ Tableau récapitulatif des paramètres :
 
 \newpage
 \section{Conclusion}
-(\textbf{\textit{Parler du projet ITER et de notre visite en tant qu'ouverture !!!}}) \\
+
+    Pour résumer, nous avons donc mis en place différents modèles de Machine Learning et de Deep Learning 
+pour prédire les facteurs de capacité des barrages hydroélectriques au fil de l'eau en France, 
+à partir de données météorologiques régionales (températures et précipitations) et journalières. 
+Après avoir comparé les performances de ces différents modèles, nous avons retenu le modèle LSTM 
+pour réaliser une étude prospective à l'horizon 2050. Cette étude comprend 2 scénarios : 
+un scénario optimiste et un scénario pessimiste, et a permis de calculer le mix énergétique 
+électrique français optimal du point de vu financier en fonction des contraintes fixées.\\
+
+    Néanmoins, plusieurs améliorations pourraient être apportées à notre travail. \\
+    
+    Tout d'abord, le modèle de prédiction des facteurs de capacité ne peut pas prendre en compte 
+l'influence humaine sur le débit des rivières. En effet, les barrages hydroélectriques sont régulés
+par des opérateurs humains qui ajustent les débits en fonction de divers facteurs.
+Par exemple, on ouvre les barrages pour répondre au pics de demande électrique,
+anticiper la fonte des glaces. Et, on les ferme pour maintenir des niveaux d'eau
+suffisants pour l'agriculture, l'approvisionnement en eau potable ou des activités 
+touristiques, comme nous l'avons vu lors de notre visite de la centrale de Sainte-Tulle, 
+avec le lac de Serre-Ponçon.\\
+
+    De plus, comme nous avons travaillé avec que deux données spatiales, il serait pertinent 
+d'en inclure davantage. Par exemple, en prenant en compte le profil des bassins versants,
+la couverture du sol, l'évapotranspiration, ou encore les données de débit des rivières.
+Ces données permettraient de mieux saisir la complexité du cycle de l'eau et d'améliorer
+la précision des prédictions. En outre, les données temporelles étant limitées à 9 ans,
+l'ajout de données historiques plus anciennes pourrait renforcer la robustesse des modèles.\\
+
+    Enfin, pour la partie prospective, puisque le modèle Times-France fonctionne majoritairement
+sur des relations linéaires, l'étude présente des incertitudes. Ensuite, le choix 
+des scénarios est arbitraire et peut fortement influencer les résultats obtenus. Il serait 
+donc intéressant d'explorer une gamme plus large de scénarios, en variant davantage les 
+sensibilités du modèle.\\
+
+    Nonobstant ces limites n'invalident aucunement notre travail, qui est une étude pospective
+et non une prévision absolue. L'objectif est d'anticiper les futurs possibles
+et de préparer des stratégies adaptées pour la gestion du système énergétique français,
+avec comme objectif la décarbonisation de l'économie.\\
+
+    Notons enfin que ce projet s'est concentré sur les moyens de production électrique
+classiques (hydroélectricité, nucléaire, éolien, solaire, thermique à flamme),
+et n'a pas pris en compte, par exemple, l'avènement potentiel de la fusion nucléaire,
+qui est actuellement porté par le projet ITER. Projet, localisé en France, 
+à Saint-Paul-lez-Durance, que nous nous avons la chance de visiter ! \\
+
+[INSERER PHOTO]
+
+    Pour finir, ce MIG fût une grande aventure, exigéeante sur le plan théorique, 
+puisque nous avons eu de nombreux cours sur les concepts mathématiques derrière 
+le machine learning et deep learning, mais aussi exenrichissante sur le plan pratique,
+car nous avons développé nos propres modèles. De surcroît, nous avons appris à travailler
+ensemble à 13, en se répartissant les tâches, en communiquant efficacement.\\
+
+    C'est pourquoi, nous souhaitons remercier très chaleureusement nos encadrants, Eddy [spap nom],
+Damien Corral et valentina Sessa, mais aussi tous les intervenants et partenaires : RTE, ITER, CMA. 
+
+[INSERER PHOTO]
 
 \end{document}
