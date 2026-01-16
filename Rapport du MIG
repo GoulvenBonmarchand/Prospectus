@@ -308,6 +308,23 @@ Random Forest est une technique basée sur les arbres de récursion, qui amélio
 [EXPLICATION PLUS DETAILLE]
 
 
+[Résultat du Random Forest]
+1. Sélection des variables et modélisation initiale
+Dans un premier temps, afin de constituer un jeu de données optimisé, une étude de corrélation a été menée pour identifier les régions ayant l'influence la plus significative sur le facteur de charge. Sur la base de ces données, nous avons implémenté une première association de modèles de type Random Forest (via la librairie Scikit-learn) avec les hyperparamètres par défaut.
+Les résultats obtenus sur les données brutes s'étant révélés insuffisants, une procédure d'optimisation par GridSearch a été appliquée. Bien que cette étape ait amélioré la précision globale, l'analyse des résidus a mis en évidence des motifs récurrents : les prédictions présentaient systématiquement une surestimation ou une sous-estimation par rapport aux données réelles.
+
+2. Caractérisation du biais systématique 
+L'observation de ces écarts a suggéré l'existence d'un biais qu'il semblait possible de corriger linéairement. L'objectif a donc été de déterminer un « biais optimal » pour une année quelconque (ex: 2024, 2030). Pour ce faire, nous avons d'abord calculé le biais optimal rétrospectif pour chaque année de la période d'entraînement (2016-2022) en comparant les valeurs prédites aux valeurs réelles (voir code en annexe).
+
+3. Développement d'un modèle hybride 
+Une première approche naïve, consistant à appliquer à l'année test (2023) la moyenne des biais des années précédentes, n'a pas produit de résultats concluants, contrairement à ce qui avait été observé avec la régression linéaire simple. La complexité du modèle Random Forest nécessitait une méthode de correction plus dynamique.
+Nous avons par conséquent élaboré une architecture hybride. Celle-ci intègre un modèle secondaire de régression linéaire, entraîné sur les biais optimaux historiques (8 points de données) ainsi que sur les variables météorologiques (températures et précipitations). Ainsi, pour une année donnée, ce modèle secondaire prédit le biais correctif à appliquer en fonction des conditions climatiques.
+
+4. Résultats et limites
+L'intégration de cette correction a permis d'améliorer significativement les performances du modèle. Toutefois, une surestimation persiste sur l'année 2023. Cette limitation est principalement attribuable à la faible taille de l'échantillon utilisé pour l'entraînement du modèle correctif (seulement 8 années d'historique). Une perspective d'amélioration consisterait à étendre la plage temporelle des données d'entraînement aux années antérieures à 2015, afin d'accroître la robustesse statistique de la correction de biais.
+
+
+
 \subsection{Gradient Boosting}
 Le Gradient Boosting est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au Random Forest qui construit ses arbres en parallèle et de manière indépendante, le Gradient Boosting construit ses arbres de manière séquentielle et additive.Chacunde ces arbres peut être relativement petit et, en général, cela améliorer progressivement la précision du modèle. \\
 
