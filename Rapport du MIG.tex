@@ -546,9 +546,10 @@ L'intégration de cette correction a permis d'améliorer significativement les p
 [AUTRES RESULTATS ?]
 
 \subsection{Gradient Boosting}
-Le Gradient Boosting est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au Random Forest qui construit ses arbres en parallèle et de manière indépendante, le Gradient Boosting construit ses arbres de manière séquentielle et additive.Chacunde ces arbres peut être relativement petit et, en général, cela améliorer progressivement la précision du modèle. \\
 
 Ensuite, nous avons cherché à développer un nouveau modèle de Machine Learning, s'appuyant sur l'algorithme de Gradient Boosting (ou XGBoost) pour améliorer encore plus nos prédictions. \\
+
+\subsubsection{Principe}
 L'algorithme de Gradient Boosting utilise lui aussi des arbres de décision et un principe itératif. Cependant, contrairement à l'algorithme de Random Forest, qui va construire parallèlement et de manière indépendante et aléatoire des arbres faibles de décision, cette nouvelle approche procède à cette construction de façon séquentielle et perturbative. L'objectif étant toujours le même : on va augmenter le nombre d'arbres, et réduire leur taille afin de mettre en commun leurs résultats et d'éviter le phénomène de sur-apprentissage et la dépendance envers le set d'entrainement. \\
 Ainsi, le principe de cette méthode est le suivant : on vient ajuster la prédiction des arbres de décision sur les résidus du modèle précédent (et non la réponse), prédiction que l'on ajoute ensuite au modèle pour aboutir à une fonction ajustée plus précise sur les erreurs des modèles précédents. \\
 En pratique, on commence par initialiser les valeurs cibles par les cibles $\{ y_{i} \}$ de l'ensemble d'entrainement. \\ 
@@ -566,7 +567,29 @@ Remarques :
     \item Le nombre d'arbres, leur profondeur, le nombre de nœuds, le taux d'apprentissage,... sont autant d'hyper-paramètres à optimiser par validation croisée lors du développement du modèle. 
 \end{itemize}
 
-[GRAPHIQUES ET COMMENTAIRES DES RESULTATS]
+\subsubsection{Résultats}
+
+Concernant les résultats du modèle, on peut toujours tracer la prédiction réalisée pour l'année 2023. 
+
+\begin{figure} [H]
+
+\centrage
+
+\includegraphics[width=0.6\textwidth]{xgboost.png}
+
+\caption{Comparaison prédiction et réalité}
+
+\étiquette{fig:resultats xgboost}
+
+\end{figure} 
+
+
+Premièrement, on peut se réjouir de la bonne allure globale de la courbe prédite qui suit les tendances globales et quelques variations à l'échelle journalière de la courbe réelle. Le modèle parvient à interpréter les variations de température et précipitations à plusieurs échelles pour en prédire un facteur de charge journalier qui reste cohérent. La sécheresse de février 2023, une anomalie jamais rencontrée dans le jeu d'entraînement parvient a être un peu perçue par le modèle. 
+
+Cependant, le modèle tendant à surrestimer les valeurs prédites, on a ajusté verticalement la prédiction en calculant un biais comme précédemment. 
+Cette méthode, si elle fournit de bons résultats à court terme peut présenter des limites pour des projections à plus long terme : puisque la méthode de calcul dépend des prédictions passées du modèle.
+Pour conclure sur cette partie, ce modèle XGBoost est le meilleur modèle de machine learning que l’on a pu construire à partir de nos données d’entrées. Cependant, les erreurs de prédiction peuvent sembler toujours assez élevées. Pour expliquer cela, il faut comprendre qu’un algorithme de Machine Learning perçoit le jeu de données comme une nuage de points dans un espace de dimension très élevée (ce qui s’affranchit de la dépendance temporelle entre les données, ce qui est dommage). C’est pour cette raison que l’on a cherché à développer d’autres modèles d’apprentissage prenant en compte cette dépendance temporelle, à travers le Deep Learning.
+
 
 
 \newpage
