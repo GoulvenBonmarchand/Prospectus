@@ -297,38 +297,82 @@ $$R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar
 \end{itemize}
 
 
-\subsection{Minimisation, Optimisation et traitement des données}
-A la vue de ces différentes erreurs, nous avons mis en place plusieurs stratégies pour réduire les erreurs. \\
+\subsection{Ingénierie des fonctionnalités (Feature Engineering)}
+
+\subsubsection{Approche méthodologique}
+
+Dans une démarche \textit{data-driven}, la qualité du pré-traitement des données conditionne la performance finale du modèle, souvent davantage que le choix de l'algorithme lui-même (principe du \textit{Garbage In, Garbage Out}). Nos données brutes étant limitées aux séries temporelles journalières de températures et de précipitations régionales, un travail approfondi de construction de variables (\textit{feature engineering}) est nécessaire pour capturer la dynamique du Facteur de Charge (CF).
+
+L'objectif est d'injecter de l'information physique dans le modèle statistique via la création de nouvelles variables explicatives.
+
+\subsubsection{Modélisation physique des variables}
+
+Nous avons identifié trois mécanismes physiques prépondérants influençant la production hydroélectrique, que nous traduisons mathématiquement :
+
+\paragraph{Inertie et délais (Lags)}
+Le ruissellement et l'infiltration des eaux de pluie ne sont pas instantanés. Pour capturer ce délai, nous introduisons des variables retardées. Si $X_t$ est une variable météo au jour $t$, on définit le \textit{lag} $\delta$ :
+\[ X_{lag, t}(\delta) = X_{t-\delta} \]
+
+\paragraph{Phénomènes d'accumulation (Windows)}
+Le débit des cours d'eau dépend d'un stock accumulé (neige en hiver, saturation des sols). Nous modélisons cela par une fenêtre glissante de taille $w$, représentant la somme des précipitations passées :
+\[ P_{window, t}(w) = \sum_{k=1}^{w} P_{t-k} \]
+
+La combinaison de ces deux effets (accumulation retardée) permet de modéliser des phénomènes complexes comme la fonte printanière d'une neige accumulée plusieurs mois auparavant :
+\[ P_{comb, t}(\delta, w) = \sum_{k=1}^{w} P_{t-\delta-k} \]
+Ces paramètres $\delta$ et $w$ sont traités comme des hyperparamètres spécifiques à chaque région, capturant ainsi implicitement les spécificités topographiques et géologiques locales.
+
+\paragraph{Saisonnalité cyclique}
+Le CF présentant une forte périodicité annuelle, l'utilisation brute de l'indice du jour $d_t \in \llbracket 1, 365 \rrbracket$ introduirait une discontinuité artificielle entre le 31 décembre et le 1er janvier. Nous projetons donc la variable temporelle sur le cercle unité pour conserver la continuité cyclique :
+\[ \mathbf{u}_t = \left( \cos\left(\frac{2\pi}{365} d_t\right) , \sin\left(\frac{2\pi}{365} d_t\right) \right) \]
+
+\subsubsection{Sélection des hyperparamètres}
+
+L'optimisation des paramètres $(\delta, w)$ repose sur l'analyse de la dépendance linéaire avec la variable cible. Nous calculons le coefficient de corrélation de Pearson $\rho$ entre la feature générée $X_{(\delta, w)}$ et le CF $Y$ :
+
+\[ \rho_{X,Y} = \frac{\text{Cov}(X,Y)}{\sigma_X \sigma_Y} = \frac{\mathbb{E}[(X - \mu_X)(Y - \mu_Y)]}{\sigma_X \sigma_Y} \]
+
+Pour chaque région, nous traçons la carte de chaleur (heatmap) de $\rho$ en fonction de $\delta$ et $w$, en conservant les configurations maximisant $|\rho|$.
+
+\begin{figure}[h!]
+  \includegraphics[width=\linewidth]{correlation_tp_lag.png}
+  \caption{Optimisation des lags pour la précipitation}
+\end{figure}
 
 
-Sur le traitement des prévision météorologiques, nous avons effectué des moyennes glissantes sur 10 ans, séparé et codé différents scénarios, et supprimé de la modélisation les régions avec une trop faible corrélation entre les données météorologiques et les CF. \\
+\begin{figure}[h!]
+  \includegraphics[width=\linewidth]{correlation_tp_accumulation_window.png}
+  \caption{Optimisation des windows pour la précipitation}
+\end{figure}
 
+\subsubsection{Le fléau de la dimension}
 
-[COMPLETER avec explications sur le traitement des données fait par Tiago et Oriane]
+L'augmentation naïve du nombre de features expose le modèle au risque de sur-apprentissage (\textit{overfitting}). Ce phénomène est une conséquence directe du \textit{fléau de la dimension} (Curse of Dimensionality).
 
-Pour le traitement des données utilisées lors de l'entraînement et du test de nos modèles (les données de 2015 à 2023), de nos modèles, nous avons procédé à la normalisation des données, au moyennage des températures, au cumul des précipitations, et de même que pour les prévisions, nous avons retiré les régions ayant une trop faible corrélation entre les données météorologique et les CF. Nous avons également mis en place des fonctions rendant compte d'une forme de périodicité dans les données, liée à la saisonnalité (ici les fonctions cosinus et sinus), ainsi que l'introduction d'un lag entre les données météorologiques et les CF. \\
+Lorsque la dimension $d$ de l'espace des features augmente, les données deviennent éparses et la notion de distance euclidienne perd sa capacité discriminante.
+Géométriquement, considérons l'hypercube unité $[0,1]^d$. La distance entre le centre et un sommet est $\frac{\sqrt{d}}{2}$, qui diverge quand $d \to +\infty$.
+À l'inverse, le volume de l'hypersphère inscrite de rayon $R$ tend vers 0. Le volume $V_d(R)$ est donné par :
+\[ V_d(R) = \frac{\pi^{d/2}}{\Gamma(\frac{d}{2} + 1)} R^d \]
+où $\Gamma$ est la fonction Gamma d'Euler ($\Gamma(n) = (n-1)!$).
+Comme $\Gamma$ croît factoriellement au dénominateur, on a $\lim_{d \to +\infty} V_d(1) = 0$. Cela implique qu'en grande dimension, la quasi-totalité du volume de l'hypercube se concentre dans ses "coins". Il faudrait alors un très (très) grand nombre de données d'apprentissage pour recouvrir l'espace de façon significative. Dans notre étude, le nombre de données d'apprentissage est assez limité (environ 5000).
 
+\subsubsection{Stratégies de réduction de dimension}
 
-Voyons plus en détail les différents traitements réalisés. Ils sont absolument essentiels, car au-delà du fait de considérer des données qui ont un impact réel sur le facteur de capacité, les traiter au préalable permet d'augmenter significativement les performances des modèles, comme nous le verrons par la suite. \\
+Pour pallier ce problème, deux approches ont été considérées.
 
-Nous avons donc mis en place différents traitements :
-\begin{itemize}
-    \item{Normalisation des données} : les données de températures que nous avons utilisé sont en Kelvin, tandis que celles de pluviométrie sont en mètre. Les premières sont donc de l'ordre de $10^2$ K et les secondes de l'ordre de $10^{-3}$ à $10^{-2}$ m. Ceci pose problème car lors des calculs réalisés à l'entraînement de notre modèle, qui vont donc construire ce même modèle, les données de température vont prendre le pas sur celles de pluviométrie, ce qui impacte fortement l'erreur que l'on aura lors de nos prévisions futures. En normalisant, ceci nous permet de rééquilibrer l'importance des différentes données prises en compte lors de la construction de notre modèle de prédiction, et donc de mettre en place un modèle plus fiable. \\
-    \item{Suppression des régions ayant une faible corrélation entre les données météorologiques et le facteur de charge national} :
-    
-    \item{Moyennage des températures} :
-    
-    \item{Lag}: il a pour but de traduire le fait que les données climatiques n'ont pas nécessairement un impact immédiat sur le facteur de capacité Par exemple, des précipitations mettent un certain temps à influer sur le débit d'un fleuve, car non localisée en une seul point. De même, il existe un certain délai entre des températures suffisamment élevée pour entraîner une fonte des neige significative, qui va par la suite résulter en une augmentation des débits fluviaux. Nous avons introduits des lags allant de 1 à 15 jours pour les données de températures. \\
+\subsubsection*{Analyse en Composantes Principales (ACP)}
+L'ACP est une méthode mathématique de réduction de dimension par projection orthogonale. Elle consiste à déterminer les axes de plus grande variance des données.
+Soit $\mathbf{X}$ la matrice des données centrées-réduites et $\Sigma = \frac{1}{n}\mathbf{X}^T\mathbf{X}$ la matrice de covariance.
+D'après le théorème spectral, $\Sigma$ étant symétrique réelle, elle est diagonalisable dans une base orthonormée :
+\[ \Sigma = P \Lambda P^T \]
+Les vecteurs propres (colonnes de $P$) associés aux plus grandes valeurs propres (éléments de $\Lambda$) forment les nouvelles features (composantes principales). Bien qu'optimale pour conserver l'information statistique, l'ACP produit des variables qui sont des combinaisons linéaires de toutes les entrées, nuisant à l'interprétabilité physique.
 
-
-    
-    \item{Implémentation des saisons} : après quelques tests, nous nous sommes rendus compte que les valeurs du CF restaient très proches de la moyennes et ne rendaient pas compte des fortes variations qu'il peut exister. Aussi, pour une meilleure prise en compte de la saisonnalité, périodique, nous avons multiplié les colonnes par des cosinus et des sinus 
-    
-    \item{Calcul du biais} :
-\end{itemize}
-
-Ceci nous permet de mettre en place différentes feuilles de données, qui introduisent différentes fenêtres de moyennage, de cumul, différents lags, etc. Ainsi, nous pouvons voir lesquels nous donnent les meilleurs résultats et de fait, retenir les données qui sont les plus pertinentes pour construire notre modèle.
-
+\subsubsection*{Sélection par connaissance métier (Approche retenue)}
+Nous avons privilégié une réduction de dimension basée sur la physique du problème pour conserver l'explicabilité du modèle.
+Nous avons opéré une sélection spatiale :
+\begin{enumerate}
+    \item Agrégation par moyennes pondérées nationales sur certaines variables.
+    \item Filtrage régional sélectif : nous ne conservons que les régions ayant un impact hydrologique majeur sur le CF national. Par exemple, les données de la région PACA (riche en centrales au fil de l'eau et reliefs) sont conservées, tandis que celles du Nord (faible relief, faible contribution au mix hydroélectrique) sont écartées.
+\end{enumerate}
 
 \newpage
 \section{Machine Learning}
