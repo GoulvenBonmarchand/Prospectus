@@ -568,7 +568,29 @@ Remarques :
     \item Le nombre d'arbres, leur profondeur, le nombre de nœuds, le taux d'apprentissage,... sont autant d'hyper-paramètres à optimiser par validation croisée lors du développement du modèle. 
 \end{itemize}
 
-[GRAPHIQUES ET COMMENTAIRES DES RESULTATS]
+\subsubsection{Résultats}
+
+Concernant les résultats du modèle, on peut toujours tracer la prédiction réalisée pour l'année 2023. 
+
+\begin{figure} [H]
+
+\centrage
+
+\includegraphics[width=0.6\textwidth]{xgboost.png}
+
+\caption{Comparaison prédiction et réalité}
+
+\étiquette{fig:resultats xgboost}
+
+\end{figure} 
+
+
+Premièrement, on peut se réjouir de la bonne allure globale de la courbe prédite qui suit les tendances globales et quelques variations à l'échelle journalière de la courbe réelle. Le modèle parvient à interpréter les variations de température et précipitations à plusieurs échelles pour en prédire un facteur de charge journalier qui reste cohérent. La sécheresse de février 2023, une anomalie jamais rencontrée dans le jeu d'entraînement parvient a être un peu perçue par le modèle. 
+
+Cependant, le modèle tendant à surrestimer les valeurs prédites, on a ajusté verticalement la prédiction en calculant un biais comme précédemment. 
+Cette méthode, si elle fournit de bons résultats à court terme peut présenter des limites pour des projections à plus long terme : puisque la méthode de calcul dépend des prédictions passées du modèle.
+Pour conclure sur cette partie, ce modèle XGBoost est le meilleur modèle de machine learning que l’on a pu construire à partir de nos données d’entrées. Cependant, les erreurs de prédiction peuvent sembler toujours assez élevées. Pour expliquer cela, il faut comprendre qu’un algorithme de Machine Learning perçoit le jeu de données comme une nuage de points dans un espace de dimension très élevée (ce qui s’affranchit de la dépendance temporelle entre les données, ce qui est dommage). C’est pour cette raison que l’on a cherché à développer d’autres modèles d’apprentissage prenant en compte cette dépendance temporelle, à travers le Deep Learning.
+
 
 
 \newpage
