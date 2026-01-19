@@ -164,7 +164,7 @@ Au cours de ces trois semaines de MIG, nous avons ainsi étudié \textbf{comment
 
 En effet, ces centrales hydrauliques reposent sur une succesion de conversion énergétique. L'énergie potentielle de l'eau est stockée en hauteur notamment à travers des barrages retenant l'eau. Cette eau rejoint, dans un second temps, à travers des conduites forcées, la centrale hydraulique en contrebas, l'énergie potentielle se convertissant en énergie cinétique. Cette dernière permet de mettre en mouvement les turbines afin de produire l'énergie mécanique, nécessaire à un alternateur pour produire de l'électricité. La puissance de la centrale dépend de la hauteur de chute et du débit de l'eau. L'eau turbinée, ayant perdue sa puissance, rejoint finalement la rivière par un canal de fuite. \\
 
-Ainsi, il existe trois principaux types de centrales hydrauliques :
+Ainsi, il existe trois principaux types de centrales hydrauliques : 
 \begin{itemize}
  \item \textbf{les barrages de moyenne ou haute chute}, caractérisés par une implantation dans des régions montagneuses, un débit faible à moyen et une hauteur de chute moyenne à haute (de 30m à >300m) : ce sont des sources d'énergie pilotables qui servent de stock utiles pour les pointes de consommation; 
 
@@ -297,15 +297,15 @@ $$R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar
 \end{itemize}
 
 
-\section{Ingénierie des fonctionnalités (Feature Engineering)}
+\subsection{Ingénierie des fonctionnalités (Feature Engineering)}
 
-\subsection{Approche méthodologique}
+\subsubsection{Approche méthodologique}
 
 Dans une démarche \textit{data-driven}, la qualité du pré-traitement des données conditionne la performance finale du modèle, souvent davantage que le choix de l'algorithme lui-même (principe du \textit{Garbage In, Garbage Out}). Nos données brutes étant limitées aux séries temporelles journalières de températures et de précipitations régionales, un travail approfondi de construction de variables (\textit{feature engineering}) est nécessaire pour capturer la dynamique du Facteur de Charge (CF).
 
 L'objectif est d'injecter de l'information physique dans le modèle statistique via la création de nouvelles variables explicatives.
 
-\subsection{Modélisation physique des variables}
+\subsubsection{Modélisation physique des variables}
 
 Nous avons identifié trois mécanismes physiques prépondérants influençant la production hydroélectrique, que nous traduisons mathématiquement :
 
@@ -325,7 +325,7 @@ Ces paramètres $\delta$ et $w$ sont traités comme des hyperparamètres spécif
 Le CF présentant une forte périodicité annuelle, l'utilisation brute de l'indice du jour $d_t \in \llbracket 1, 365 \rrbracket$ introduirait une discontinuité artificielle entre le 31 décembre et le 1er janvier. Nous projetons donc la variable temporelle sur le cercle unité pour conserver la continuité cyclique :
 \[ \mathbf{u}_t = \left( \cos\left(\frac{2\pi}{365} d_t\right) , \sin\left(\frac{2\pi}{365} d_t\right) \right) \]
 
-\subsection{Sélection des hyperparamètres}
+\subsubsection{Sélection des hyperparamètres}
 
 L'optimisation des paramètres $(\delta, w)$ repose sur l'analyse de la dépendance linéaire avec la variable cible. Nous calculons le coefficient de corrélation de Pearson $\rho$ entre la feature générée $X_{(\delta, w)}$ et le CF $Y$ :
 
@@ -344,7 +344,7 @@ Pour chaque région, nous traçons la carte de chaleur (heatmap) de $\rho$ en fo
   \caption{Optimisation des windows pour la précipitation}
 \end{figure}
 
-\subsection{Le fléau de la dimension}
+\subsubsection{Le fléau de la dimension}
 
 L'augmentation naïve du nombre de features expose le modèle au risque de sur-apprentissage (\textit{overfitting}). Ce phénomène est une conséquence directe du \textit{fléau de la dimension} (Curse of Dimensionality).
 
@@ -355,7 +355,7 @@ Géométriquement, considérons l'hypercube unité $[0,1]^d$. La distance entre 
 où $\Gamma$ est la fonction Gamma d'Euler ($\Gamma(n) = (n-1)!$).
 Comme $\Gamma$ croît factoriellement au dénominateur, on a $\lim_{d \to +\infty} V_d(1) = 0$. Cela implique qu'en grande dimension, la quasi-totalité du volume de l'hypercube se concentre dans ses "coins". Il faudrait alors un très (très) grand nombre de données d'apprentissage pour recouvrir l'espace de façon significative. Dans notre étude, le nombre de données d'apprentissage est assez limité (environ 5000).
 
-\subsection{Stratégies de réduction de dimension}
+\subsubsection{Stratégies de réduction de dimension}
 
 Pour pallier ce problème, deux approches ont été considérées.
 
@@ -548,10 +548,9 @@ L'intégration de cette correction a permis d'améliorer significativement les p
 [AUTRES RESULTATS ?]
 
 \subsection{Gradient Boosting}
+Le Gradient Boosting est également une technique utilisant les arbres et la récursion. Néanmoins, contrairement au Random Forest qui construit ses arbres en parallèle et de manière indépendante, le Gradient Boosting construit ses arbres de manière séquentielle et additive.Chacunde ces arbres peut être relativement petit et, en général, cela améliorer progressivement la précision du modèle. \\
 
 Ensuite, nous avons cherché à développer un nouveau modèle de Machine Learning, s'appuyant sur l'algorithme de Gradient Boosting (ou XGBoost) pour améliorer encore plus nos prédictions. \\
-
-\subsubsection{Principe}
 L'algorithme de Gradient Boosting utilise lui aussi des arbres de décision et un principe itératif. Cependant, contrairement à l'algorithme de Random Forest, qui va construire parallèlement et de manière indépendante et aléatoire des arbres faibles de décision, cette nouvelle approche procède à cette construction de façon séquentielle et perturbative. L'objectif étant toujours le même : on va augmenter le nombre d'arbres, et réduire leur taille afin de mettre en commun leurs résultats et d'éviter le phénomène de sur-apprentissage et la dépendance envers le set d'entrainement. \\
 Ainsi, le principe de cette méthode est le suivant : on vient ajuster la prédiction des arbres de décision sur les résidus du modèle précédent (et non la réponse), prédiction que l'on ajoute ensuite au modèle pour aboutir à une fonction ajustée plus précise sur les erreurs des modèles précédents. \\
 En pratique, on commence par initialiser les valeurs cibles par les cibles $\{ y_{i} \}$ de l'ensemble d'entrainement. \\ 
@@ -596,41 +595,37 @@ Pour conclure sur cette partie, ce modèle XGBoost est le meilleur modèle de ma
 
 \newpage
 \section{Deep Learning}
-
+\subsection{Introduction aux Réseaux de Neurones}
+\paragraph{Une nouvelle approche}
 Nous nous sommes ensuite penchés sur une approche différente : le Deep Learning. C’est un autre sous-domaine de l'apprentissage automatique qui utilise des réseaux de neurones artificiels composés de nombreuses couches pour analyser des données et prendre des décisions.
 
-En particulier, nous avons utilisé le modèle LSTM (Long Short-Term Memory, soit Mémoire à Long Terme et à Court Terme), qui est un type de réseau de neurones récurrents (RNN) particulièrement adapté pour traiter et prédire les séries temporelles et les séquences de données.\\
+\paragraph{La théorie mathématique}
+Les réseaux de neurones artificiels «~classiques~», aussi appelés réseaux \emph{feedforward} (ou perceptrons multicouches, MLP), sont des modèles paramétriques qui approximent une fonction $f_\theta : \mathbb{R}^d \rightarrow \mathbb{R}^k$ en composant plusieurs transformations linéaires et non linéaires. Un réseau à $L$ couches calcule successivement, à partir d’une entrée $x$, des activations $h^{(0)} = x$ puis, pour $l=1,\dots,L$, 
+\[
+z^{(l)} = W^{(l)} h^{(l-1)} + b^{(l)}, 
+\qquad 
+h^{(l)} = \phi^{(l)}\!\big(z^{(l)}\big),
+\]
+où $W^{(l)}$ et $b^{(l)}$ sont les paramètres appris, et $\phi^{(l)}$ une fonction d’activation (ReLU, $\tanh$, etc.) introduisant la non-linéarité. La dernière couche produit une sortie $\hat{y}=h^{(L)}$ (par exemple, une \emph{softmax} en classification) qui est comparée à la cible $y$ via une fonction de perte $\mathcal{L}(\hat{y},y)$. L’apprentissage consiste à minimiser l’erreur moyenne sur un jeu de données $\{(x_i,y_i)\}_{i=1}^n$ en ajustant $\theta=\{W^{(l)},b^{(l)}\}$ par descente de gradient (souvent stochastique)~: les gradients $\nabla_\theta \mathcal{L}$ sont calculés efficacement grâce à la rétropropagation (\emph{backpropagation}), puis les paramètres sont mis à jour selon $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$, où $\eta$ est le taux d’apprentissage.
 
+\subsection{Réseaux de Neurones Récurrents pour Séries Temporelles} 
 
-Le Deep learning étant un domaine large, nous avons choisi de nous concentrer sur le modèle LSTM pour \textit{Long Short Term Memory}. Cette architecture permet au Réseau Neuronal Récurrent de condeerver plus facilement les informations sur plusieurs étapes temporelles récurrentes. 
+\paragraph{Choix d'architecture pour des séries temporelles}
+Les réseaux de neurones \emph{feedforward} (tels que les MLP) constituent une base solide en apprentissage supervisé, mais montrent une limite structurelle dès lors qu’ils sont appliqués à des \textbf{séries temporelles} : ils ne représentent pas explicitement la \textbf{dépendance séquentielle}. Un MLP traite chaque observation comme un vecteur indépendant et, sauf recours à une ingénierie de variables (retards, fenêtres glissantes, agrégations, encodage temporel), il n’intègre pas naturellement le fait que \emph{l’ordre} et le \emph{contexte} des mesures portent de l’information. Cette absence de mémoire interne complique la capture de dynamiques telles que l’inertie, les effets retardés, les saisonnalités ou certaines interactions temporelles, et rend la performance plus sensible au choix de la fenêtre d’observation et aux \emph{features} construites.
 
-Les LSTM ne garantissent pas l’absence de problèmes de gradient
-disparaissant/explosif, mais elles offrent au modèle un moyen plus simple d’apprendre les dépendances à longue distance.\\
+\paragraph{Réseaux récurrents et état caché}
+Pour intégrer cette dimension temporelle, nous retenons une architecture \textbf{récurrente} (\emph{Recurrent Neural Network}, RNN), qui introduit une forme de mémoire via un \textbf{état caché} $h_t$ mis à jour à chaque pas de temps. À l’instant $t$, la représentation dépend à la fois de l’entrée courante $x_t$ et du contexte accumulé dans $h_{t-1}$, ce qui permet de modéliser des dépendances de court terme sans spécifier explicitement, en entrée, une liste de retards. Formellement, un schéma récurrent simple s’écrit typiquement
+\[
+h_t = \phi\!\big(W_x x_t + W_h h_{t-1} + b\big),
+\]
+où $\phi$ est une non-linéarité et $(W_x,W_h,b)$ des paramètres appris.
 
-\subsection{Introduction aux Réseaux de Neurones}
+\paragraph{LSTM et apprentissage des dépendances longues}
+Nous utilisons plus spécifiquement une cellule \textbf{LSTM} (\emph{Long Short-Term Memory}), conçue pour atténuer une difficulté classique des RNN : la \textbf{disparition du gradient} lors de la rétropropagation à travers de longues séquences, qui freine l’apprentissage de dépendances à long terme. Le LSTM introduit un état de mémoire $c_t$ et un mécanisme de \textbf{portes} (\emph{gates}) qui contrôlent le flux d’information : une \emph{porte d’oubli} sélectionne ce qui est conservé du passé, une \emph{porte d’entrée} régule l’intégration de nouvelles informations, et une \emph{porte de sortie} détermine la partie de la mémoire exposée à l’état caché. Cette régulation stabilise l’optimisation et permet de capturer des motifs temporels persistants (tendances, régimes, effets retardés).
 
-[EXPLIQUER LE PRINCIPE DE BASE ET LES RESULTATS OBTENUS]
+\paragraph{Stacked LSTM et représentations hiérarchiques}
+Afin d’augmenter la capacité de représentation, nous adoptons un \textbf{Stacked LSTM}, où plusieurs couches LSTM sont empilées : la sortie d’une couche sert d’entrée à la suivante. Cette profondeur favorise l’apprentissage \textbf{hiérarchique} des dynamiques temporelles : les premières couches captent souvent des régularités locales (variations rapides, corrélations de court terme), tandis que les couches supérieures modélisent des structures plus \textbf{abstraites} et \textbf{non linéaires} (tendances globales, interactions complexes entre variables, dépendances plus longues). En pratique, cette architecture améliore la flexibilité du modèle au prix d’un coût de calcul accru et d’un besoin plus marqué en régularisation (par exemple \emph{dropout}, arrêt anticipé) pour limiter le sur-apprentissage.
 
-\subsection{Réseaux de Neurones Récurrents pour Séries Temporelles}
-Nous nous sommes ensuite penchés sur une approche différente et plus complexe : le Deep Learning. C'est un autre sous-domaine de l'apprentissage automatique qui utilise des réseaux de neurones artificiels composés de nombreuses couches pour analyser des données et prendre des décisions. 
-
-\paragraph{Choix d'architecture pour des séries temporelles} \\
-Les réseaux de neurones \emph{feedforward} (par exemple les MLP) constituent une première approche efficace pour l'apprentissage supervisé, mais présentent une limitation structurelle lorsqu'ils sont appliqués à des \textbf{séries temporelles} : ils ne modélisent pas explicitement la \textbf{dépendance séquentielle}. En pratique, un MLP traite chaque observation comme un vecteur ``statique'' et, sauf ingénierie de variables spécifique (retards, agrégations, encodage positionnel), il n'intègre pas naturellement le fait que l'ordre des mesures porte de l'information. Cette absence de mémoire interne rend l'extraction de dynamiques temporelles (inertie, effets retardés, saisonnalités et interactions dans le temps) plus difficile et souvent dépendante du choix de la fenêtre et des \emph{features} construites.
-
-\paragraph{Réseaux récurrents et état caché} \\
-Pour représenter cette dimension temporelle, nous avons retenu une architecture \textbf{récurrente} (\emph{Recurrent Neural Network}, RNN). Contrairement à une approche strictement instantanée, un RNN maintient un \textbf{état caché} $h_t$ mis à jour à chaque pas de temps : la prédiction à l'instant $t$ dépend à la fois de l'entrée courante $x_t$ et du contexte accumulé via $h_{t-1}$. Ce mécanisme confère au modèle une forme de mémoire, permettant d'exploiter des dépendances de court terme sans imposer explicitement une représentation \emph{ad hoc} des retards.
-
-\paragraph{LSTM et problème de disparition du gradient} \\
-Nous avons plus spécifiquement implémenté un \textbf{LSTM} (\emph{Long Short-Term Memory}), conçu pour atténuer une difficulté majeure des RNN standards : la \textbf{disparition du gradient} (\emph{vanishing gradient}), qui limite l'apprentissage de dépendances à long terme lors de la rétropropagation à travers de longues séquences. Le LSTM introduit une \textbf{mémoire interne} (souvent notée $c_t$) et un système de \textbf{portes} (\emph{gates}) qui contrôlent le flux d'information :
-\begin{itemize}
-    \item une \emph{porte d'oubli} régule la conservation ou la suppression d'informations passées ;
-    \item une \emph{porte d'entrée} contrôle l'intégration de nouvelles informations ;
-    \item une \emph{porte de sortie} détermine la part de mémoire exposée à la couche suivante.
-\end{itemize}
-En régulant ces opérations, le LSTM stabilise l'apprentissage et permet de capturer des motifs temporels plus persistants que ceux généralement accessibles à un RNN simple.
-
-\paragraph{Stacked LSTM et apprentissage hiérarchique} \\
-Afin d'augmenter la capacité de représentation, nous avons utilisé un \textbf{Stacked LSTM} (LSTM empilé), c'est-à-dire une architecture où plusieurs couches LSTM sont superposées. La sortie de la première couche sert d'entrée à la seconde, et ainsi de suite. Cette profondeur permet d'apprendre une hiérarchie de représentations : les couches inférieures tendent à capter des régularités locales (variations rapides, corrélations de court terme), tandis que les couches supérieures peuvent modéliser des structures plus \textbf{abstraites} et \textbf{non linéaires} (tendances, interactions complexes entre variables, dépendances plus longues).
 
 \paragraph{Résultats et limites de généralisation} \\
 Dans notre cas, les performances obtenues sur l'année \textbf{2023} se sont révélées très élevées, malgré un ensemble de variables explicatives limité : les entrées sont principalement des \textbf{moyennes nationales}, construites à partir de fenêtres temporelles différentes pour les \textbf{précipitations} et les \textbf{températures}. Une première analyse a toutefois mis en évidence un biais méthodologique : l'absence initiale de \textbf{jeu de validation}. Sans séparation temporelle stricte, le modèle peut s'ajuster excessivement aux spécificités de 2023 (surapprentissage), ce qui conduit à des résultats flatteurs en apparence, mais à une \textbf{faible capacité de généralisation}. \\
