@@ -1,0 +1,80 @@
+## Modèle XGBOOST
+
+#Import des modules utiles
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+
+#Chargement des données 
+
+X = pd.read_csv("data/features.csv", index_col = "Date", parse_dates = True)
+y = pd.read_csv("date/target.csv", index_col = "Date", parse_dates True)
+
+# Modèle Gradient Boosting
+gbr = GradientBoostingRegressor(
+    n_estimators=100,  
+    learning_rate=0.1, 
+    max_depth=3,
+    min_samples_leaf = 1,
+    subsample = 1.0,
+    random_state = 42,
+)
+
+
+# Entraînement
+gbr.fit(X_train_pca, y_train.values.ravel())
+
+# Calcul du biais
+
+liste_biais = []
+for i, (train_idx, test_idx) in enumerate(time_split_cv(Xt, y, n_splits=8)):
+    # Découpage des données
+    biais=0
+    X_train, X_test = Xt.iloc[train_idx], Xt.iloc[test_idx]
+    y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+    
+    # Entraînement
+    gbr.fit(X_train, y_train.values.ravel())
+
+    # Prédictions
+    y_pred = gbr.predict(X_test)
+    y_pred = pd.Series(y_pred, index=y_test.index)
+    r2 = r2_score(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+    
+    for i in range(len(y_pred)):
+        biais+=(y_test[i]-y_pred[i])
+    biais=biais/len(y_test)
+    liste_biais.append(biais)
+
+biais = np.array(liste_biais.pop()).mean()
+  
+# Prédictions
+y_pred = gbr.predict(X_test_pca) + biais
+y_pred = pd.Series(y_pred, index=y_test.index)
+
+# Calcul des erreurs
+
+r2 = r2_score(y_test,y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+nrmse = rmse / np.mean(y_test)
+mae = mean_absolute_error(y_test, y_pred)
+nmae = mae / np.mean(y_test)
+r = np.corrcoef(y_test, y_pred)[0,1]
+
+#Calcul du biais optimal
+
+from sklearn.model_selection import TimeSeriesSplit
+
+def time_split_cv(X, y, n_splits=8):
+
+    tscv = TimeSeriesSplit(
+    n_splits=n_splits)
+    splits=[]
+    for train_idx, test_idx in tscv.split(X):
+        splits.append((train_idx, test_idx))
+        
+    return splits
