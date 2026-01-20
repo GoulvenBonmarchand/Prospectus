@@ -732,9 +732,11 @@ Néanmoins, il s’agit du but même de la prospective de mettre en place tous c
 
 \subsection{Les scénarios mis en place}
 
-[EXPLIQUER LES SCENARIOS REALISES, LES CONTRAINTES FIXEES, ETC]
+Nous avons voulu utiliser les données obtenues pour 2050 pour faire tourner le modèle Times, et apprendre comment différents paramètres impactent le mix électrique de 2050. Ainsi, dans une démarche de prospective, nous avons mis en place deux scénarios, que nous avons nommés “optimiste” et “pessimiste”. 
+Ils correspondent à différents types d'interventions gouvernementales pour l’écologie. \\
 
-Tableau récapitulatif des paramètres : 
+Avant de voir plus en détail ces deux scénarios, voici un tableau qui récapitule les paramètres que nous avons fixés dans chacun des deux scénarios : \\
+
 \begin{center}
 \begin{tabular}{|m{4cm}|m{4cm}|m{4cm}|}
    \hline
@@ -753,9 +755,28 @@ Tableau récapitulatif des paramètres :
 \end{tabular}
 \end{center}
 
-\subsection{Résultats}
+Dans le scénario “optimiste” on fixe la demande électrique à la valeur qui a été obtenue sur l'année 2023. Il est difficile d’estimer en pratique quelle sera la variation de la demande électrique dans les prochaines années car elle sera affectée par l’électrification des usages, l’optimisation des procédés actuels, les nouvelles technologies mises en place, et par un potentiel objectif de sobriété. 
 
-[METTRE LES GRAPHIQUES, COMMENTER, JUSTIFIER NOS RESULTATS]
+On garde de plus la taxe carbone à la valeur actuelle fixée par le gouvernement, et on force ainsi le modèle à respecter l’objectif de neutralité carbone du mix électrique d’ici 2050. Cela correspond simplement à suivre les objectifs théoriques actuels du gouvernement. 
+Les derniers paramètres que nous avons modifiés sont les “capacity credit” qu’applique RTE à différentes énergies renouvelables. Ce “credit” correspond au pourcentage de la capacité installée d'une centrale à laquelle RTE fait confiance à tout instant, et notamment aux moments critiques (par exemple lors d’un pic de demande, comme on peut en avoir lors d’un soir d’hiver, dans une période froide). 
+Plus il est important pour une source d'énergie, plus TIMES va la considérer comme fiable, et donc comme rentable. Cela nous permet d’obtenir les résultats suivants : \\
+[graphe]
+C’est un scénario assez similaire à ce que la France met en place actuellement donc on obtient un mix assez similaire à celui actuel, ce qui le rend facile à analyser. 
+La partie hydraulique correspond à la capacité maximale installable. La partie nucléaire, rendue compétitive par la taxe carbone, fait le gros de la production électrique. 
+La partie gaz, quant à elle, s’occupe de la variabilité du système : elle assure la production pour pallier à l’intermittence des EnR, et aux incertitudes du système énergétique en cas de pic de demande électrique. \\
+
+[retour du tableau]
+Dans le scénario pessimiste, l'électrification n’est pas compensée par une sobriété ou par une optimisation, donc la demande d'électricité augmente d’un pour cent par an, ce qui correspond à une augmentation de 30\% de la demande d’ici 2050. 
+De plus, le gouvernement de ce scénario supprime la taxe carbone, ce qui change les rapports de prix entre les différents moyens de production d’électricité. 
+Nous avons choisi des “capacity credits” qui se rapprochent de ceux fixés par l'Allemagne actuellement. On obtient ainsi ce graphique plus étonnant : \\
+[graphe]
+Le nucléaire, par exemple, est tombé à 6 pourcent. En effet, il est relativement plus cher que les autres sources d’électricité (120€ le MWh électrique d’après la Cour des Comptes, contre 35 à 45 euros le MWh électrique au gaz, et 20 à 25 euros pour le charbon).
+Ainsi, ici, c’est le solaire qui joue le rôle de gros producteur. Cela peut paraître surprenant quand on pense à son “capacity credit” de 0\%, et cela nous permet de mieux comprendre les critères de TIMES. \\
+De fait, le logiciel considère qu’il faut une certaine capacité totale, ce qu’on a décrit comme “le gros de la production électrique”. Dans ce cas-ci, le solaire est une capacité pour les moments où le système électrique est en tension, qui elle prend en compte les “capacity credits”, ici le charbon et le gaz notamment. 
+On remarque cependant que les centrales hydrauliques sont toujours intéressantes économiquement, même sans taxe carbone. \\
+Cependant si ce scénario est intéressant pour en apprendre plus sur TIMES, son fonctionnement, et sur le système électrique, il n’est pas vraiment réaliste. Ce mix ne serait pas possible, notamment politiquement, mais aussi parce que les ressources en charbon ne sont pas infinies. 
+On arrive ici aux limites de la linéarité du modèle TIMES; il considère certaines matières premières comme infinies, et ne prend ainsi pas en compte le fait que leur prix augmente en cas de trop forte consommation, notamment s’il faut les importer. \\
+
 
 \newpage
 \section{Conclusion}
