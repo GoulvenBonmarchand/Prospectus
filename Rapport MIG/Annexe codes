@@ -1,109 +1,26 @@
-## Modèle XGBOOST
+# Bibliothèques
 
-#Import des modules utiles
-import pandas as pd
-import numpy as np
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
-
-#Chargement des données 
-
-X = pd.read_csv("data/features.csv", index_col = "Date", parse_dates = True)
-y = pd.read_csv("date/target.csv", index_col = "Date", parse_dates True)
-
-# Modèle Gradient Boosting
-gbr = GradientBoostingRegressor(
-    n_estimators=100,  
-    learning_rate=0.1, 
-    max_depth=3,
-    min_samples_leaf = 1,
-    subsample = 1.0,
-    random_state = 42,
-)
-
-
-# Entraînement
-gbr.fit(X_train_pca, y_train.values.ravel())
-
-# Calcul du biais
-
-liste_biais = []
-for i, (train_idx, test_idx) in enumerate(time_split_cv(Xt, y, n_splits=8)):
-    # Découpage des données
-    biais=0
-    X_train, X_test = Xt.iloc[train_idx], Xt.iloc[test_idx]
-    y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
-    
-    # Entraînement
-    gbr.fit(X_train, y_train.values.ravel())
-
-    # Prédictions
-    y_pred = gbr.predict(X_test)
-    y_pred = pd.Series(y_pred, index=y_test.index)
-    r2 = r2_score(y_test, y_pred)
-    mse = mean_squared_error(y_test, y_pred)
-    mae = mean_absolute_error(y_test, y_pred)
-    
-    for i in range(len(y_pred)):
-        biais+=(y_test[i]-y_pred[i])
-    biais=biais/len(y_test)
-    liste_biais.append(biais)
-
-biais = np.array(liste_biais.pop()).mean()
-  
-# Prédictions
-y_pred = gbr.predict(X_test_pca) + biais
-y_pred = pd.Series(y_pred, index=y_test.index)
-
-# Calcul des erreurs
-
-r2 = r2_score(y_test,y_pred)
-mse = mean_squared_error(y_test, y_pred)
-rmse = np.sqrt(mse)
-nrmse = rmse / np.mean(y_test)
-mae = mean_absolute_error(y_test, y_pred)
-nmae = mae / np.mean(y_test)
-r = np.corrcoef(y_test, y_pred)[0,1]
-
-#Calcul du biais optimal
-
-from sklearn.model_selection import TimeSeriesSplit
-
-def time_split_cv(X, y, n_splits=8):
-
-    tscv = TimeSeriesSplit(
-    n_splits=n_splits)
-    splits=[]
-    for train_idx, test_idx in tscv.split(X):
-        splits.append((train_idx, test_idx))
-        
-    return splits
-
-
-# LINEAR REGRESSION 
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import Ridge
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+from sklearn.model_selection import TimeSeriesSplit
+import torch
+import torch.nn as nn
+from torch.utils.data import Dataset, DataLoader
+from torch.optim import Adam
+from torch.utils.data import Subset
 
-sns.set_style('whitegrid')
 
-cf = pd.read_csv("data/CF_1d.csv", index_col="Date", parse_dates=True)  # CF
-ta = pd.read_csv("Prospectus/data/TA_2_LAGGED_notall.csv",index_col="Date", parse_dates=True)  #température
-tp = pd.read_csv("Prospectus/data/TP_FR.csv",index_col="Date", parse_dates=True)  #précipitations
 
-# Features & Target
-cf_FR = cf[["FR"]]
-ta_FR = ta[ta.columns[ta.columns.str.startswith("FR")]]
-tp_FR = tp[tp.columns[tp.columns.str.startswith("FR")]]
+### FONCTION D'AFFICHAGE (avec saisonnalité)
 
-data = pd.DataFrame(())
-
-data['CF']= cf_FR
-data['TP'] = tp_FR.mean(axis=1)
-data['TA']=ta_FR.mean(axis=1)
-from sklearn.metrics import r2_score, mean_squared_error
 def display_result_season(y_true, y_pred):
     dmap = {
         12: 'DJF', 1: 'DJF', 2: 'DJF',
@@ -152,40 +69,31 @@ def display_result_season(y_true, y_pred):
     ax2.legend(handles=handles, title="Season")
 
     plt.show()
-def display_result(y_true, y_pred):
-    """Affiche les résultats de prédiction / réels."""
-    fig = plt.figure(figsize=(16, 4), constrained_layout=True)
-    gs = fig.add_gridspec(ncols=2, nrows=1, width_ratios=[2, 1])
-    ax1 = fig.add_subplot(gs[0, 0])
-    ax2 = fig.add_subplot(gs[0, 1])
 
-    # Plot 1
-    ax1.set_title("Capacity factor predictions")
-    ax1.plot(y_true.index, y_true, color="tab:blue", label="Actual")
-    ax1.plot(y_true.index, y_pred, color="tab:red", label="Predicted")
 
-    ax1.set_xlim(y_true.index[0], y_true.index[-1])
-    ax1.legend(loc="lower right", title="Capacity Factor")
 
-    # Plot 2
-    ax2.set_title("Actual vs Predicted")
-    ax2.set_xlabel("Actual")
-    ax2.set_ylabel("Predicted")
-    ax2.scatter(y_true, y_pred, color="tab:blue", s=10)
+### TRAITEMENT DES DONNEES
 
-    left, right = ax2.get_xlim()
-    bottom, top = ax2.get_ylim()
-    lb = min(left, bottom) - 0.01
-    ub = max(right, top) + 0.01
-    ax2.set_ylim(lb, ub)
-    ax2.set_xlim(lb, ub)
-    ax2.axline((lb, lb), (ub, ub), color="tab:red")
+sns.set_style('whitegrid')
 
-    plt.show()
-    from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
+cf = pd.read_csv("data/CF_1d.csv", index_col="Date", parse_dates=True)  # CF
+ta = pd.read_csv("Prospectus/data/TA_2_LAGGED_notall.csv",index_col="Date", parse_dates=True)  #température
+tp = pd.read_csv("Prospectus/data/TP_FR.csv",index_col="Date", parse_dates=True)  #précipitations
 
 # Features & Target
+cf_FR = cf[["FR"]]
+ta_FR = ta[ta.columns[ta.columns.str.startswith("FR")]]
+tp_FR = tp[tp.columns[tp.columns.str.startswith("FR")]]
+
+data = pd.DataFrame(())
+
+data['CF']= cf_FR
+data['TP'] = tp_FR.mean(axis=1)
+data['TA']=ta_FR.mean(axis=1)
+
+
+# Features & Target
+
 X = pd.merge(ta_FR.rolling(window=14, min_periods=1).mean(), tp_FR.rolling(window=90, min_periods=1).sum(), left_index = True, right_index = True, suffixes = ("_TA", "_TP"))
 y = data["CF"]
 
@@ -203,8 +111,6 @@ X_train_std["sin"] = np.sin(X_train_std.index.dayofyear * 2 * np.pi/365)
 
 results = {"Actual": y_test}
 
-import pandas as pd
-import numpy as np
 
 # --- 1. FEATURE ENGINEERING - FENÊTRES GLISSANTES ET LAG ---
 
@@ -262,7 +168,7 @@ X_test_std_lag["sin"] = np.cos(X_test_std_lag.index.dayofyear * 2 * np.pi/365)
 # Vous pouvez maintenant entraîner votre modèle Ridge ou GBR sur X_train_std
 # votre code ici
 
-from sklearn.linear_model import Ridge
+
 # Normalisation
 scaler = StandardScaler().set_output(transform="pandas")  # on les recentre et on les mets à la même échelle 
 # scaler est une classe 
@@ -273,6 +179,14 @@ scaler = StandardScaler().set_output(transform="pandas")  # on les recentre et o
 #X_test_std = scaler.transform(X_test)   #on a utilisé que les données d'entraînement : pas de fuite de données
 
 results = {"Actual": y_test}
+
+
+### PCA
+
+
+
+
+### REGRESSION LINEAIRE / RIDGE REGRESSION
 
 ridge = Ridge()
 ridge.fit(X_train_std_lag, y_train)
@@ -305,3 +219,375 @@ print(f"Bias (Intercept): {ridge.intercept_:.6f}")
 
 # Affichage personnalisé
 display_result_season(y_test, y_pred)
+
+
+
+### RANDOM FOREST
+
+
+
+
+### XGBOOST
+
+# Modèle Gradient Boosting
+gbr = GradientBoostingRegressor(
+    n_estimators=100,  
+    learning_rate=0.1, 
+    max_depth=3,
+    min_samples_leaf = 1,
+    subsample = 1.0,
+    random_state = 42,
+)
+
+
+# Entraînement
+gbr.fit(X_train, y_train.values.ravel())
+
+# Calcul du biais
+
+liste_biais = []
+for i, (train_idx, test_idx) in enumerate(time_split_cv(Xt, y, n_splits=8)):
+    # Découpage des données
+    biais=0
+    X_train, X_test = Xt.iloc[train_idx], Xt.iloc[test_idx]
+    y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+    
+    # Entraînement
+    gbr.fit(X_train, y_train.values.ravel())
+
+    # Prédictions
+    y_pred = gbr.predict(X_test)
+    y_pred = pd.Series(y_pred, index=y_test.index)
+    r2 = r2_score(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+    
+    for i in range(len(y_pred)):
+        biais+=(y_test[i]-y_pred[i])
+    biais=biais/len(y_test)
+    liste_biais.append(biais)
+
+biais = np.array(liste_biais.pop()).mean()
+  
+# Prédictions
+y_pred = gbr.predict(X_test) + biais
+y_pred = pd.Series(y_pred, index=y_test.index)
+
+# Calcul des erreurs
+
+r2 = r2_score(y_test,y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+nrmse = rmse / np.mean(y_test)
+mae = mean_absolute_error(y_test, y_pred)
+nmae = mae / np.mean(y_test)
+r = np.corrcoef(y_test, y_pred)[0,1]
+
+# Calcul du biais optimal
+
+def time_split_cv(X, y, n_splits=8):
+
+    tscv = TimeSeriesSplit(
+    n_splits=n_splits)
+    splits=[]
+    for train_idx, test_idx in tscv.split(X):
+        splits.append((train_idx, test_idx))
+        
+    return splits
+
+
+### LSTM 
+
+### Traitement des données spécifique au LSTM
+
+tp_test = pd.read_csv("../data/TP_ACC_NOTALL_W_OPTI.csv", index_col="Date", parse_dates=["Date"])
+ta_test = pd.read_csv("../data/TA_3_LAGGED_30_WIN_NOTALL.csv", index_col="Date", parse_dates=["Date"])
+data_test = pd.concat([ta_test,tp_test,cf["FR"].rename("CF")],axis=1).iloc[179:]
+
+ta_2023 = pd.read_csv("../TA_MEAN.csv", index_col="Date", parse_dates=["Date"]).iloc[2921:]
+tp_20231 = pd.read_csv("../data/TP_1d.csv", index_col="Date", parse_dates=["Date"])
+tp_2023 = tp_20231.loc[:, tp_20231.columns.str.startswith("FR")]
+tp_2023 = tp_2023.mean(axis=1).rename("TP").iloc[2921:]
+
+
+# ==========================================
+# 1. Configuration Globale (Hyperparamètres)
+# ==========================================
+class Config:
+    # Fenêtres physiques (Feature Engineering)
+    WINDOW_TP = 7    # Jours pour l'accumulation de pluie
+    WINDOW_TA = 25   # Jours pour l'inertie thermique
+    
+    # Fenêtres du Modèle (Architecture LSTM)
+    SEQ_LENGTH = 90  # Look-back window (Profondeur BTT)
+    PRED_HORIZON = 1 # Prédiction à t+1
+    
+    # Architecture
+    HIDDEN_SIZE = 64
+    NUM_LAYERS = 3
+    DROPOUT = 0.2
+    BATCH_SIZE = 32
+    
+    # Entraînement
+    LR = 0.001
+    EPOCHS = 30
+    DROPOUT = 0.2
+    
+CONFIG = Config()
+
+# ==========================================
+# 2. Préparation des données
+# ==========================================
+X1 = data.drop(columns="CF")
+yn = data["CF"]
+
+X_test = data_test.drop(columns="CF")
+y_test = data_test["CF"]
+
+Xn ,yn = X_test, y_test
+
+#Création des séries temporelles
+Xt = []
+yt = []
+def create_sequence(X):
+    Xt=[]
+    for i in range(len(X)-CONFIG.SEQ_LENGTH):
+        Xt.append(Xn.iloc[i:i+CONFIG.SEQ_LENGTH])
+    return np.array(Xt)
+
+for i in range(len(Xn)-CONFIG.SEQ_LENGTH):
+    Xt.append(Xn.iloc[i:i+CONFIG.SEQ_LENGTH])
+    yt.append(yn.iloc[i+CONFIG.SEQ_LENGTH])
+Xt =  np.array(Xt)
+yt = np.array(yt)
+
+class TimeSeriesDataset(Dataset):
+    def __init__(self, X, y=None):
+        self.X = torch.tensor(X, dtype=torch.float32)
+        if y is not None:
+            self.y = torch.tensor(y, dtype=torch.float32)
+        else:
+            self.y = None
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, i):
+        if self.y is not None:
+            return self.X[i], self.y[i]
+        return self.X[i]
+    
+ds = TimeSeriesDataset(Xt, yt)
+#Mise en GPU (la puissance)
+ds.X = ds.X
+ds.y = ds.y
+
+#création des sous dataset
+
+total_len = len(ds)
+valid_len = 365
+test_len = 365
+split_train = total_len - (valid_len + test_len) 
+split_idx = total_len - test_len
+
+train_indices = range(0, split_train)
+test_indices = range(split_idx, total_len)
+valid_indices = range(split_train, split_idx)
+
+train_ds = Subset(ds, train_indices)
+valid_ds = Subset(ds, valid_indices)
+test_ds = Subset(ds, test_indices)
+
+# Gestionnaire de batchs
+train_loader = DataLoader(train_ds, batch_size=CONFIG.BATCH_SIZE, shuffle=False)
+valid_loader = DataLoader(valid_ds, batch_size=CONFIG.BATCH_SIZE, shuffle=False)
+test_loader = DataLoader(test_ds, batch_size=CONFIG.BATCH_SIZE, shuffle=False)
+
+# Paramètres pour la normalisation
+Xstd, *_ = train_ds.dataset[train_ds.indices]
+mu, sigma = Xstd.mean(dim=0), Xstd.std(dim=0)
+
+### MODELE LSTM
+
+torch.set_num_threads(10)
+
+class LSTM(nn.Module):
+    def __init__(self, input_size, hidden_size, num_layers, output_size, dropout=0.2):
+        super(LSTM, self).__init__()
+        
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        
+        # Couche LSTM
+        # input_shape attendu : (batch_size, sequence_length, input_size)
+        self.lstm = nn.LSTM(
+            input_size=input_size, 
+            hidden_size=hidden_size, 
+            num_layers=num_layers, 
+            batch_first=True,
+            dropout=dropout
+        )
+        
+        # Couche entièrement connectée pour la régression finale
+        self.fc = nn.Linear(hidden_size, output_size)
+
+        self.reset_parameters()
+
+    def reset_parameters(self):
+            # LSTM block
+            for name, param in self.lstm.named_parameters():
+                if "weight_ih" in name:
+                    nn.init.xavier_uniform_(param)
+                elif "weight_hh" in name:
+                    nn.init.orthogonal_(param)
+                elif "bias" in name:
+                    nn.init.zeros_(param)
+
+    def forward(self, x):
+        
+        # Propagation avant (Forward pass)
+        # out shape: (batch_size, seq_length, hidden_size)
+        out, _ = self.lstm(x)
+        
+        # On récupère seulement la sortie du dernier pas de temps de la séquence
+        out = out[:, -1, :]
+        
+        # Prédiction finale
+        out = self.fc(out)
+        return out
+
+
+#Chargement du modèle optimal retenu pour la prédiction
+FILE="model.pt"
+model_opt=torch.load(FILE,weights_only=False, map_location=torch.device('cpu'))
+
+#Métrics sur 2022, jeu de validation
+with torch.no_grad():
+    predict = []
+    true = []
+    for X, y in valid_loader :
+        X = (X-mu)/sigma
+        y_hat = model_opt(X)
+        predict.extend(y_hat.cpu().numpy().squeeze())
+        true.extend(y.cpu().numpy())
+    index = X1.index[len(X1)-730:len(X1)-365]
+    r2 = r2_score(true, predict)
+    mse = mean_squared_error(true, predict)
+    mae = mean_absolute_error(true, predict)
+    rmse = np.sqrt(mse)
+    nrmse = rmse / np.mean(true)
+    nmae =  mae / np.mean(true)
+    r = np.corrcoef(true, predict)[0, 1]
+    print(f"R2: {r2:.03f}")
+    print(f"NRMSE: {nrmse:.3f}")
+    print(f"NMAE: {nmae:.3f}")
+    print(f"R:{r:.3f}")
+    display_result_season(true, predict, index)
+
+#Metrics sur 2023
+with torch.no_grad():
+    predict = []
+    true = []
+    for X, y in test_loader :
+        X = (X-mu)/sigma
+        y_hat = model_opt(X)
+        predict.extend(y_hat.cpu().numpy().squeeze())
+        true.extend(y.cpu().numpy())
+    index = X1.index[len(X1)-365:]
+    r2 = r2_score(true, predict)
+    mse = mean_squared_error(true, predict)
+    mae = mean_absolute_error(true, predict)
+    rmse = np.sqrt(mse)
+    nrmse = rmse / np.mean(true)
+    nmae =  mae / np.mean(true)
+    r = np.corrcoef(true, predict)[0, 1]
+    print(f"R2: {r2:.03f}")
+    #print(f"RMSE: {rmse:.03f}")
+    print(f"NRMSE: {nrmse:.03f}")
+    #print(f"MSE: {mse:.03f}")
+    #print(f"MAE: {mae}")
+    print(f"NMAE: {nmae:.3f}")
+    print(f"R:{r:.3f}")
+    display_result_season(true, predict, index)
+
+
+
+### ETUDE PROSPECTIVE
+
+#Etude prospective avec le modèle retenu
+
+
+import matplotlib.pyplot as plt
+
+#Boucles de test sur les différentes projections
+
+#Données de Prospective
+list_mod = ["rcp45","rcp85"]
+list_l = ["A","B","C","D","E","F","G","H","I","J","L"]
+
+TA=pd.read_csv("../data_pro/times/rcp45/A/TA_AVG_LAG3_WIN30_ROPT.csv", index_col="Date", parse_dates=["Date"])
+model_opt.eval()
+
+CF_45 = pd.DataFrame()
+CF_85 = pd.DataFrame()
+for mod in list_mod:
+    for val in list_l:
+        
+        #Importations des données d'une projection
+        ta = pd.read_csv(f"../data_pro/times/{mod}/{val}/TA_AVG_LAG3_WIN30_ROPT.csv", index_col="Date", parse_dates=["Date"])
+        tp = pd.read_csv(f"../data_pro/times/{mod}/{val}/TP_ACC_WOPT_ROPT.csv", index_col="Date", parse_dates=["Date"])
+        X1 = pd.concat([ta,tp],axis=1)
+
+        df = pd.DataFrame()
+        
+        #start ,end = indices[365-seq_len], indices[-1]
+        start, end = 4745-CONFIG.SEQ_LENGTH, 5110
+        proj_indices = range(start, end)
+
+        X2 = X1.iloc[start:end]
+
+        Xt = create_sequence(X2)
+
+        #Initialisation des features
+        proj_ds = TimeSeriesDataset(Xt)
+        
+        #Mise en GPU (la puissance)
+        proj_ds.X = proj_ds.X
+        #ds.y = ds.y.to(device)
+        
+        ta_trac = pd.read_csv(f"../data_pro/times/{mod}/{val}/TA_AVG.csv", index_col="Date", parse_dates=["Date"])
+        y = ta_trac["TA"].iloc[4746:5110]
+        x = ta_trac.iloc[4746:5110].index
+        y_ref = ta_2023
+        tp_trac = pd.read_csv(f"../data_pro/times/{mod}/{val}/TP_AVG_ROPT.csv", index_col="Date", parse_dates=["Date"])
+        y1 = tp_trac["TP"].iloc[4746:5110]
+        x1 = tp_trac.iloc[4746:5110].index
+        # Gestionnaire de batchs
+        proj_loader = DataLoader(proj_ds, batch_size=CONFIG.BATCH_SIZE, shuffle=False)
+        #Résultat sur 2050
+        with torch.no_grad():
+            predict = []
+            #true = []
+            for X in proj_loader :
+                X = (X-mu)/sigma
+                y_hat = model_opt(X)
+                predict.extend(y_hat.cpu().numpy().squeeze())
+                #true.extend(y.cpu().numpy())
+            index = X1.index[start+CONFIG.SEQ_LENGTH:end]
+            print(f"Modèle utilisé: {mod}; Scénario: {val}")
+            index2 = X2.index
+            df["CF_predict"] = predict
+            df["Date"] = index 
+            if mod == "rcp45":
+                CF_45 = pd.merge([CF_45,df])
+            if mod == "rcp85":
+                CF_85 = pd.merge([CF_85,df])
+            df.set_index('Date', inplace=True)
+            df.to_csv(f"CF_pred_{mod}_{val}")
+            plt.plot(x,y, color ='red')
+            plt.plot(x,y_ref) ; plt.show()
+            plt.plot(x,y1, color='red') 
+            plt.plot(x,tp_2023) ; plt.show()
+            plt.plot(index,predict)
+            display_proj(predict, index)
+
