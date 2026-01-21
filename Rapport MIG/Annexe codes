@@ -6,11 +6,11 @@ import seaborn as sns
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import Ridge
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
-from sklearn.model_selection import TimeSeriesSplit
+from sklearn.model_selection import TimeSeriesSplit, RandomizedSearchCV, train_test_split
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
@@ -181,7 +181,9 @@ scaler = StandardScaler().set_output(transform="pandas")  # on les recentre et o
 results = {"Actual": y_test}
 
 
-### PCA
+
+
+
 
 
 
@@ -222,7 +224,170 @@ display_result_season(y_test, y_pred)
 
 
 
+
+
+
+
 ### RANDOM FOREST
+
+# Modèle Random Forest
+rf = RandomForestRegressor(
+    n_estimators=300,   # nombre d'arbres
+    max_depth= 10,    # profondeur illimitée
+    random_state=30,
+    n_jobs=-1          # utilise tous les cœurs CPU
+)
+
+# Entraînement
+rf.fit(X_train, y_train)
+
+# Prédictions
+y_pred = rf.predict(X_test)
+y_pred = pd.Series(y_pred, index=y_test.index)
+
+# Ajout dans results
+results2["GBR"] = y_pred
+
+# Métriques
+r2 = r2_score(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+
+print(f"R2: {r2:.06f}")
+print(f"MSE: {mse:.06f}")
+print()
+
+display_result_season(y_test, y_pred)
+
+
+## Optimisation via calcul du biais
+
+Bias = []
+
+for i in range(2,10) : 
+
+    # --- 3. SPLIT ET NORMALISATION ---
+    # Split temporel strict (pas de shuffle)
+    test_size = 365
+    X_train, X_test = pd.concat([X.iloc[:-i*test_size],X.iloc[-(i-1)*test_size:] ]), X.iloc[-i*test_size: -(i-1)*test_size]
+    y_train, y_test = pd.concat([y.iloc[:-i*test_size], y.iloc[-(i-1)*test_size:]]), y.iloc[-i*test_size: -(i-1)*test_size]
+    
+        
+    # Normalisation 
+    scaler = StandardScaler().set_output(transform="pandas")
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    
+    # --- 4. MODÉLISATION ET OPTIMISATION ---
+    
+    # Définition du modèle de base
+    rf = RandomForestRegressor(random_state=42, n_jobs=-1)
+    
+    # Recherche d'hyperparamètres (Optimisation)
+    
+    param_dist = {
+        'n_estimators': [200, 300, 400, 500, 600],
+        'max_depth': [10, 20, None],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4],
+        'max_features': ['sqrt', 'log2', None] 
+    }
+    
+    tscv = TimeSeriesSplit(n_splits=3)
+    
+    random_search = RandomizedSearchCV(
+        estimator=rf,
+        param_distributions=param_dist,
+        n_iter=10, # Augmente ce nombre si tu as du temps CPU (ex: 50)
+        cv=tscv,
+        scoring='neg_mean_squared_error',
+        verbose=1,
+        random_state=42,
+        n_jobs=-1
+    )
+    
+    print("Démarrage de l'entraînement")
+    random_search.fit(X_train_scaled, y_train)
+    
+    best_model = random_search.best_estimator_
+    print(f"Meilleurs paramètres : {random_search.best_params_}")
+    
+    # --- 5. ÉVALUATION ---
+    y_pred = best_model.predict(X_test_scaled)
+    
+    bias = optimize_bias(y_test, y_pred)
+    y_pred = y_pred + bias
+    
+    
+    r2 = r2_score(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+    
+    
+    display_result_season(y_test, y_pred)
+    print(f"R2 : {r2}")
+    print(f"MSE : {mse}")
+    print(f"MAE : {mae}")
+    print(bias)
+    Bias.append(bias)
+
+
+optimal_bias = np.mean(Bias)
+
+print(optimal_bias)
+
+## Dernier test sur 2023
+
+# --- 4. MODÉLISATION ET OPTIMISATION ---
+    
+# Définition du modèle de base
+rf = RandomForestRegressor(random_state=42, n_jobs=-1)
+    
+# Recherche d'hyperparamètres (Optimisation)
+    
+param_dist = {
+        'n_estimators': [50,100,150,200,250,270, 300, 400, 500, 600],
+        'max_depth': [10, 20,40, 50, 60,70,80,90,100,110,120,130,150, None],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4],
+        'max_features': ['sqrt', 'log2', None] 
+    }
+    
+tscv = TimeSeriesSplit(n_splits=3)
+    
+random_search = RandomizedSearchCV(
+        estimator=rf,
+        param_distributions=param_dist,
+        n_iter=10, # Augmente ce nombre si tu as du temps CPU (ex: 50)
+        cv=tscv,
+        scoring='neg_mean_squared_error',
+        verbose=1,
+        random_state=42,
+        n_jobs=-1
+    )
+    
+print("Démarrage de l'entraînement")
+random_search.fit(X_train_scaled, y_train)
+    
+best_model = random_search.best_estimator_
+print(f"Meilleurs paramètres : {random_search.best_params_}")
+# --- 5. ÉVALUATION ---
+y_pred = best_model.predict(X_test_scaled)
+
+
+y_pred = y_pred + bias_2023
+    
+r2 = r2_score(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+
+    
+display_result_season(y_test, y_pred)
+print(f"R2 : {r2}")
+print(f"MSE : {mse}")
+print(f"MAE : {mae}")
+
+
+
 
 
 
@@ -294,6 +459,11 @@ def time_split_cv(X, y, n_splits=8):
         splits.append((train_idx, test_idx))
         
     return splits
+
+
+
+
+
 
 
 ### LSTM 
@@ -589,5 +759,5 @@ for mod in list_mod:
             plt.plot(x,y1, color='red') 
             plt.plot(x,tp_2023) ; plt.show()
             plt.plot(index,predict)
-            display_proj(predict, index)
+            display_result_season(predict, index)
 
